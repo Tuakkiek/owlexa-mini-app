@@ -1,47 +1,160 @@
-# Zalo Mini App
+# Owlexa Student Mini App
 
-## Development
+Zalo Mini App dành cho học viên của hệ thống Owlexa.
 
-### Using Zalo Mini App Extension
+Ứng dụng này tập trung vào trải nghiệm student-only trên mobile, giúp học viên theo dõi lịch học, điểm danh, học phí, bài tập, tài liệu và hồ sơ cá nhân ngay trong Zalo.
 
-1. Install [Visual Studio Code](https://code.visualstudio.com/download) and [Zalo Mini App Extension](https://mini.zalo.me/docs/dev-tools).
-1. In the **Home** tab, process **Config App ID** and **Install Dependencies**.
-1. Navigate to the **Run** tab, select the suitable launcher, and click **Start**.
+## Tính năng hiện có
 
-### Using Zalo Mini App CLI
+- Đăng nhập và xác thực role `STUDENT`
+- Trang chủ dashboard với:
+  - thông tin học viên
+  - lịch học sắp tới
+  - học phí cần thanh toán
+  - bài tập cần chú ý
+  - tài liệu mới được chia sẻ
+- Lịch học theo tuần
+- Điểm danh theo lớp và theo ngày
+- Học phí và thanh toán QR
+- Danh sách bài tập được giao
+- Bắt đầu / tiếp tục lượt làm bài
+- Làm bài cơ bản cho:
+  - câu hỏi trắc nghiệm
+  - câu hỏi tự luận
+- Thư viện tài liệu học tập
+- Hồ sơ cá nhân và đăng xuất
 
-1. [Install Node JS](https://nodejs.org/en/download/).
-1. [Install Zalo Mini App CLI](https://mini.zalo.me/docs/dev-tools/cli/intro/).
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-1. **Start** the dev server:
-   ```bash
-   zmp start
-   ```
-1. **Open** `localhost:3000` in your browser.
+## Tech Stack
 
-## Deployment
+- React 18
+- TypeScript
+- Vite
+- Zalo Mini App SDK (`zmp-sdk`)
+- ZaUI (`zmp-ui`)
+- Jotai
+- Axios
+- Tailwind CSS
+- Sass
 
-1. **Create** a mini program. For instructions on how to create a mini program, please refer to the [Coffee Shop Tutorial](https://mini.zalo.me/tutorial/coffee-shop/step-1/)
+## Yêu cầu
 
-1. **Deploy** your mini program to Zalo using the mini app ID created.
+- Node.js 18+
+- npm
+- Zalo Mini App CLI hoặc Zalo Mini App VS Code Extension
 
-   - **Using Zalo Mini App Extension**: navigate to the **Deploy** panel > **Login** > **Deploy**.
-   - **Using Zalo Mini App CLI**:
-     ```bash
-     zmp login
-     zmp deploy
-     ```
+## Cài đặt
 
-1. Open the mini app in Zalo by scanning the QR code.
+```bash
+npm install
+```
 
-## Resources
+## Chạy local
 
-- [Zalo Mini App Official Website](https://mini.zalo.me/)
-- [ZaUI Documentation](https://mini.zalo.me/documents/zaui/)
-- [ZMP SDK Documentation](https://mini.zalo.me/documents/api/)
-- [DevTools Documentation](https://mini.zalo.me/docs/dev-tools/)
-- [Ready-made Mini App Templates](https://mini.zalo.me/zaui-templates)
-- [Community Support](https://mini.zalo.me/community)
+### Cách 1: dùng Zalo Mini App CLI
+
+```bash
+npm run start
+```
+
+Sau đó mở preview theo flow của Zalo Mini App CLI.
+
+### Cách 2: dùng VS Code Extension
+
+1. Cài `Zalo Mini App Extension`
+1. Mở thư mục `owlexa-mini-app`
+1. Cấu hình App ID trong extension
+1. Cài dependencies
+1. Start từ tab Run của extension
+
+## Build production
+
+```bash
+npm run build
+```
+
+Output build nằm trong thư mục `www/`.
+
+## Deploy
+
+Đăng nhập Zalo Mini App CLI:
+
+```bash
+npm run login
+```
+
+Deploy:
+
+```bash
+npm run deploy
+```
+
+## Cấu hình môi trường
+
+Ứng dụng dùng `VITE_API_URL` để trỏ tới backend.
+
+Trong production, biến này là bắt buộc.
+
+Ví dụ:
+
+```bash
+VITE_API_URL=https://your-api-domain.com
+```
+
+Nếu không truyền `VITE_API_URL`, app sẽ fallback về:
+
+```text
+http://localhost:8081
+```
+
+## Điều hướng chính
+
+- `/login`
+- `/`
+- `/schedule`
+- `/attendance`
+- `/assignments`
+- `/assignments/attempt/:attemptId`
+- `/documents`
+- `/fees`
+- `/profile`
+
+## Cấu trúc thư mục chính
+
+```text
+src/
+  components/
+    content/
+    navigation/
+  core/
+    api/
+    auth/
+    storage/
+    utils/
+  features/
+    assignments/
+    attendance/
+    auth/
+    documents/
+    fees/
+    home/
+    profile/
+    schedule/
+    submission/
+  layouts/
+  router/
+```
+
+## Ghi chú
+
+- App hiện được thiết kế riêng cho học viên, không hỗ trợ teacher/owner/cashier flow.
+- Nội dung bài làm hiện đã hỗ trợ render rich content cơ bản và làm bài cho `MULTIPLE_CHOICE` + `ESSAY`.
+- Một số block nâng cao như audio/table/file preview có thể tiếp tục mở rộng ở các bước sau.
+
+## Scripts
+
+```bash
+npm run start
+npm run build
+npm run login
+npm run deploy
+```
