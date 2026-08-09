@@ -161,14 +161,14 @@ export const AssignmentsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 px-4 pb-6 pt-4">
-      <section className="rounded-[24px] bg-[linear-gradient(135deg,#fefce8_0%,#ffffff_58%,#ffedd5_100%)] p-5 shadow-sm">
+    <div className="mx-auto w-full max-w-[520px] space-y-6 px-4 pb-6 pt-4">
+      <section className="rounded-card border border-surface-border bg-white p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
               Bài tập
             </p>
-            <h1 className="mt-1 text-[24px] font-bold leading-tight text-text-heading">
+            <h1 className="mt-1 text-3xl font-semibold leading-tight text-text-heading">
               Danh sách bài được giao
             </h1>
             <p className="mt-2 text-sm text-text-muted">
@@ -333,7 +333,7 @@ export const AssignmentsPage: React.FC = () => {
 
       {passwordAssignment && (
         <div className="fixed inset-0 z-50 flex items-end bg-black/40">
-          <div className="w-full rounded-t-[28px] bg-white p-5 shadow-xl">
+          <div className="w-full rounded-t-card bg-white p-6 shadow-md">
             <h3 className="text-lg font-bold text-text-heading">Nhập mật khẩu bài làm</h3>
             <p className="mt-2 text-sm text-text-muted">
               Bài <span className="font-semibold text-text-heading">{passwordAssignment.title}</span> yêu cầu mật khẩu để bắt đầu.
@@ -384,7 +384,7 @@ export const AssignmentsPage: React.FC = () => {
 
       {historyAssignment && (
         <div className="fixed inset-0 z-50 flex items-end bg-black/40">
-          <div className="max-h-[85vh] w-full overflow-y-auto rounded-t-[28px] bg-white p-5 shadow-xl">
+          <div className="max-h-[85vh] w-full overflow-y-auto rounded-t-card bg-white p-6 shadow-md">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-lg font-bold text-text-heading">Lịch sử làm bài</h3>

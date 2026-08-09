@@ -1,5 +1,4 @@
 import type {
-  BankTransferQrResponse,
   FeeRecordResponse,
   FeeStatus,
   PaymentMethod,
@@ -8,13 +7,34 @@ import type {
 } from "@/core/auth/authTypes";
 
 export type {
-  BankTransferQrResponse,
   FeeRecordResponse,
   FeeStatus,
   PaymentMethod,
   PaymentResponse,
   TransactionStatus,
 };
+
+export interface BankTransferQrResponse {
+  paymentId: number;
+  paymentCode: string;
+  amount: number | string;
+  bankName?: string | null;
+  accountNumber?: string | null;
+  accountHolder?: string | null;
+  transferContent?: string | null;
+  qrContent?: string | null;
+  qrImage?: string | null;
+  expiresAt?: string | null;
+  status?: "PENDING" | "PAID" | "EXPIRED" | "CANCELLED" | null;
+
+  // Legacy / mismatched fields kept as optional fallbacks so the UI can
+  // tolerate old payload shapes while we align the app with backend/web.
+  qrImageUrl?: string | null;
+  bankBin?: string | null;
+  accountNo?: string | null;
+  accountName?: string | null;
+  description?: string | null;
+}
 
 export type PaymentConceptualState =
   | "IDLE"

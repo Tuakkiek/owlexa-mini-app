@@ -1,5 +1,6 @@
 import React from "react";
-import { Route, AnimationRoutes } from "zmp-ui";
+import { Route } from "zmp-ui";
+import { Routes } from "react-router-dom";
 import { PATHS } from "./routes";
 import PublicLayout from "@/layouts/PublicLayout";
 import MainLayout from "@/layouts/MainLayout";
@@ -17,7 +18,7 @@ import SubmissionAttemptPage from "@/features/submission/pages/SubmissionAttempt
 
 export const AppRoutes: React.FC = () => {
   return (
-    <AnimationRoutes>
+    <Routes>
       <Route
         path={PATHS.LOGIN}
         element={
@@ -106,7 +107,7 @@ export const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
-    </AnimationRoutes>
+    </Routes>
   );
 };
 

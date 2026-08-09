@@ -121,14 +121,14 @@ export const AttendancePage: React.FC = () => {
   const isLoading = isLoadingSchedules || isLoadingAttendance;
 
   return (
-    <div className="space-y-4 px-4 pb-6 pt-4">
-      <section className="rounded-[24px] bg-[linear-gradient(135deg,#ecfeff_0%,#ffffff_58%,#dbeafe_100%)] p-5 shadow-sm">
+    <div className="mx-auto w-full max-w-[520px] space-y-6 px-4 pb-6 pt-4">
+      <section className="rounded-card border border-surface-border bg-white p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
               Điểm danh
             </p>
-            <h1 className="mt-1 text-[24px] font-bold leading-tight text-text-heading">
+            <h1 className="mt-1 text-3xl font-semibold leading-tight text-text-heading">
               Lịch sử có mặt
             </h1>
             <p className="mt-2 text-sm text-text-muted">
@@ -138,7 +138,7 @@ export const AttendancePage: React.FC = () => {
           <button
             onClick={() => fetchAttendance()}
             disabled={isLoading || !selectedClassId}
-            className="rounded-full border border-surface-border bg-white px-3 py-2 text-xs font-semibold text-text-body disabled:opacity-50"
+            className="min-h-12 rounded-btn border border-surface-border bg-white px-3 py-2 text-xs font-semibold text-text-body disabled:opacity-50"
           >
             {isLoading ? "Đang tải..." : "Làm mới"}
           </button>
@@ -170,7 +170,7 @@ export const AttendancePage: React.FC = () => {
         </div>
       )}
 
-      <section className="rounded-[24px] border border-surface-border bg-white p-4 shadow-sm">
+      <section className="rounded-card border border-surface-border bg-white p-4">
         <div className="grid gap-3">
           <div>
             <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">

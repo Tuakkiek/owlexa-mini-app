@@ -68,7 +68,7 @@ export const UnpaidFeesSection: React.FC<UnpaidFeesSectionProps> = ({
           </p>
         </div>
       ) : (
-        <div className="mt-4 rounded-[20px] bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_100%)] p-4">
+        <div className="mt-4 rounded-card border border-surface-border bg-primary-light p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[11px] uppercase tracking-[0.16em] text-amber-700">
