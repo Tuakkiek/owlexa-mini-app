@@ -51,14 +51,14 @@ export const FeesPage: React.FC = () => {
   }, 0);
 
   return (
-    <div className="space-y-4 px-4 pb-6 pt-4">
-      <section className="rounded-[24px] bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_55%,#ffedd5_100%)] p-5 shadow-sm">
+    <div className="mx-auto w-full max-w-[520px] space-y-6 px-4 pb-6 pt-4">
+      <section className="rounded-card border border-surface-border bg-white p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
               Thanh toán
             </p>
-            <h1 className="mt-1 text-[24px] font-bold leading-tight text-text-heading">
+            <h1 className="mt-1 text-3xl font-semibold leading-tight text-text-heading">
               Học phí của bạn
             </h1>
             <p className="mt-2 text-sm text-text-muted">
@@ -68,14 +68,14 @@ export const FeesPage: React.FC = () => {
           <button
             onClick={() => fetchFees()}
             disabled={isLoading}
-            className="rounded-full border border-surface-border bg-white px-3 py-2 text-xs font-semibold text-text-body disabled:opacity-50"
+            className="min-h-12 rounded-btn border border-surface-border bg-white px-3 py-2 text-xs font-semibold text-text-body disabled:opacity-50"
           >
             {isLoading ? "Đang tải..." : "Làm mới"}
           </button>
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="rounded-[18px] border border-surface-border bg-white px-4 py-3">
+          <div className="rounded-card border border-surface-border bg-surface-page px-4 py-3">
             <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
               Còn phải đóng
             </p>
@@ -83,7 +83,7 @@ export const FeesPage: React.FC = () => {
               {isLoading ? "..." : formatMoney(totalDue)}
             </p>
           </div>
-          <div className="rounded-[18px] border border-surface-border bg-white px-4 py-3">
+          <div className="rounded-card border border-surface-border bg-surface-page px-4 py-3">
             <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
               Hóa đơn mở
             </p>
@@ -95,7 +95,7 @@ export const FeesPage: React.FC = () => {
       </section>
 
       {error && (
-        <div className="rounded-[18px] border border-error/20 bg-red-50 p-4 text-sm text-error">
+        <div role="alert" className="rounded-card border border-error/20 bg-red-50 p-4 text-sm text-error">
           {error}
         </div>
       )}

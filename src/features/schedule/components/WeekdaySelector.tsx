@@ -30,7 +30,8 @@ export const WeekdaySelector: React.FC<WeekdaySelectorProps> = ({
           <button
             key={day}
             onClick={() => onSelectDay(day)}
-            className={`min-w-[64px] rounded-[18px] border px-3 py-2.5 text-center transition-colors ${
+            aria-pressed={isSelected}
+            className={`min-w-16 rounded-btn border px-3 py-2 text-center transition-colors ${
               isSelected
                 ? "border-primary bg-primary text-white shadow-sm"
                 : "border-surface-border bg-surface-card text-text-body"

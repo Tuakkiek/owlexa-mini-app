@@ -112,10 +112,10 @@ export const BottomTabBar: React.FC = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-30 border-t border-surface-border/80 bg-white/95 backdrop-blur-md"
+      className="fixed bottom-0 left-0 right-0 z-30 border-t border-surface-border bg-white"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-auto flex h-[64px] max-w-[520px] items-center justify-around gap-1 px-2">
+      <div className="mx-auto flex h-16 max-w-[520px] items-center justify-around gap-1 px-2">
         {tabs.map((tab) => {
           const isActive = currentPath === tab.path;
 
@@ -123,17 +123,18 @@ export const BottomTabBar: React.FC = () => {
             <button
               key={tab.key}
               onClick={() => navigate(tab.path)}
-              className="flex flex-1 flex-col items-center justify-center py-1 outline-none transition-colors"
+              aria-current={isActive ? "page" : undefined}
+              className="flex min-h-12 flex-1 flex-col items-center justify-center py-1 outline-none transition-colors"
             >
               <div
-                className={`flex h-10 w-14 items-center justify-center rounded-[16px] transition-all ${
-                  isActive ? "bg-primary-light shadow-sm" : "bg-transparent"
+                className={`flex h-10 w-12 items-center justify-center rounded-btn transition-colors ${
+                  isActive ? "bg-primary-light" : "bg-transparent"
                 }`}
               >
                 {tab.icon(isActive)}
               </div>
               <span
-                className={`mt-0.5 text-[11px] font-semibold ${
+                className={`mt-0.5 text-xs font-medium ${
                   isActive ? "text-primary" : "text-text-muted"
                 }`}
               >

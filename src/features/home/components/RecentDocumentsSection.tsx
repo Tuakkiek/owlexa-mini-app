@@ -80,7 +80,7 @@ export const RecentDocumentsSection: React.FC<RecentDocumentsSectionProps> = ({
                 href={doc.url}
                 target="_blank"
                 rel="noreferrer"
-                className="block rounded-[20px] border border-surface-border bg-[linear-gradient(180deg,#ffffff_0%,#f0fdf4_100%)] p-4"
+                className="block rounded-card border border-surface-border bg-white p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">

@@ -156,7 +156,7 @@ export const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4 px-4 pb-6 pt-4">
+    <div className="mx-auto w-full max-w-[520px] space-y-6 px-4 pb-6 pt-4">
       <ProfileSummarySection />
 
       <section className="grid grid-cols-2 gap-3">
@@ -184,13 +184,13 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="rounded-[24px] border border-surface-border bg-white p-4 shadow-sm">
+      <section className="rounded-card border border-surface-border bg-white p-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
               Truy cập nhanh
             </p>
-            <h3 className="mt-1 text-base font-bold text-text-heading">
+            <h3 className="mt-1 text-lg font-semibold text-text-heading">
               Tác vụ học viên hay dùng
             </h3>
           </div>
@@ -201,7 +201,7 @@ export const HomePage: React.FC = () => {
             <button
               key={action.path}
               onClick={() => navigate(action.path)}
-              className="flex w-full items-center justify-between rounded-[18px] border border-surface-border bg-surface-page px-4 py-3 text-left"
+              className="flex min-h-12 w-full items-center justify-between rounded-input border border-surface-border bg-surface-page px-4 py-3 text-left"
             >
               <div>
                 <p className="text-sm font-semibold text-text-heading">

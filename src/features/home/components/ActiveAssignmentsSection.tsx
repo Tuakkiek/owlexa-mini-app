@@ -81,7 +81,7 @@ export const ActiveAssignmentsSection: React.FC<ActiveAssignmentsSectionProps> =
             <button
               key={assignment.recipientId}
               onClick={() => navigate(PATHS.ASSIGNMENTS)}
-              className="flex w-full items-start justify-between rounded-[20px] border border-surface-border bg-[linear-gradient(180deg,#ffffff_0%,#fffbeb_100%)] p-4 text-left"
+              className="flex w-full items-start justify-between rounded-card border border-surface-border bg-white p-4 text-left"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
