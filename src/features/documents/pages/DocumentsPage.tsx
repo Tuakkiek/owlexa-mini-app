@@ -68,14 +68,14 @@ export const DocumentsPage: React.FC = () => {
   }, [documents, searchTerm, selectedClassId, selectedType]);
 
   return (
-    <div className="space-y-4 px-4 pb-6 pt-4">
-      <section className="rounded-[24px] bg-[linear-gradient(135deg,#f0fdf4_0%,#ffffff_58%,#dbeafe_100%)] p-5 shadow-sm">
+    <div className="mx-auto w-full max-w-[520px] space-y-6 px-4 pb-6 pt-4">
+      <section className="rounded-card border border-surface-border bg-white p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
               Tài liệu
             </p>
-            <h1 className="mt-1 text-[24px] font-bold leading-tight text-text-heading">
+            <h1 className="mt-1 text-3xl font-semibold leading-tight text-text-heading">
               Thư viện học tập
             </h1>
             <p className="mt-2 text-sm text-text-muted">

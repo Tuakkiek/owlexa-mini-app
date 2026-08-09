@@ -10,8 +10,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <div className="relative min-h-screen bg-surface-page font-sans text-text-body">
       <main
         style={{
-          paddingBottom:
-            "calc(var(--app-bottom-nav-height, 56px) + env(safe-area-inset-bottom) + var(--page-bottom-spacing, 16px))",
+          paddingBottom: "calc(var(--app-bottom-nav-height) + env(safe-area-inset-bottom) + var(--page-bottom-spacing))",
         }}
       >
         {children}

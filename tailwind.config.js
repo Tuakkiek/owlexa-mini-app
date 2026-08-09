@@ -29,6 +29,15 @@ module.exports = {
         card: "16px",
       },
       fontFamily: {
+        sans: [
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "Roboto",
+          "Arial",
+          "sans-serif",
+        ],
         mono: ["Roboto Mono", "monospace"],
       },
     },
