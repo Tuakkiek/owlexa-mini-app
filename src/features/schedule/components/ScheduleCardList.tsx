@@ -1,7 +1,8 @@
 import React from "react";
+import { Clock, User, MapPin, CalendarDays } from "lucide-react";
 import { WEEKDAYS_MAP, type DayOfWeek, type ScheduleResponse } from "../scheduleTypes";
 
-type DaySection = {
+export type DaySection = {
   day: DayOfWeek;
   date: Date;
   schedules: ScheduleResponse[];
@@ -50,39 +51,6 @@ const periodLabel = (schedule: ScheduleResponse) => {
   return `Tiết ${startPeriod} - ${endPeriod}`;
 };
 
-const Icon = ({
-  type,
-  className = "h-4 w-4",
-}: {
-  type: "clock" | "pin" | "teacher";
-  className?: string;
-}) => {
-  if (type === "clock") {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 6v6l4 2" />
-      </svg>
-    );
-  }
-
-  if (type === "pin") {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" />
-        <circle cx="12" cy="10" r="3" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M16 21v-2a4 4 0 0 0-8 0v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-};
-
 export const ScheduleCardList: React.FC<ScheduleCardListProps> = ({
   sections,
   isLoading,
@@ -106,11 +74,11 @@ export const ScheduleCardList: React.FC<ScheduleCardListProps> = ({
 
   if (sections.length === 0) {
     return (
-      <div className="rounded-card border border-dashed border-surface-border bg-white px-4 py-12 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-surface-page text-xl text-text-muted">
-          L
+      <div className="rounded-[16px] border border-dashed border-surface-border bg-white px-4 py-10 text-center shadow-sm">
+        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-surface-page text-text-muted">
+          <CalendarDays className="h-5 w-5 text-gray-400" />
         </div>
-        <p className="mt-4 text-sm font-semibold text-text-heading">
+        <p className="mt-3 text-sm font-semibold text-text-heading">
           Chưa có lịch trong tuần này
         </p>
         <p className="mt-1 text-xs leading-5 text-text-muted">
@@ -129,7 +97,7 @@ export const ScheduleCardList: React.FC<ScheduleCardListProps> = ({
         >
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-text-heading">
-              {WEEKDAYS_MAP[section.day].label}
+              {WEEKDAYS_MAP[section.day]?.label || section.day}
             </h2>
             <span className="text-sm text-text-muted">{formatDate(section.date)}</span>
           </div>
@@ -142,19 +110,19 @@ export const ScheduleCardList: React.FC<ScheduleCardListProps> = ({
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="text-[18px] font-semibold leading-6 text-text-heading">
+                    <h3 className="text-base font-bold text-text-heading truncate">
                       {item.className}
                     </h3>
-                    <p className="mt-1 text-sm text-text-muted">
+                    <p className="mt-1 text-xs text-text-muted">
                       {item.lessonNumber ? `Lesson #${item.lessonNumber}` : `Lớp #${item.classId}`}
                     </p>
                   </div>
                   <span
                     className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                      TYPE_BADGE[item.type] ?? "bg-surface-page text-text-body"
+                      TYPE_BADGE[item.type || ""] ?? "bg-primary-light text-primary"
                     }`}
                   >
-                    {TYPE_LABELS[item.type] ?? "Lịch học"}
+                    {TYPE_LABELS[item.type || ""] ?? "Lịch học"}
                   </span>
                 </div>
 
@@ -165,24 +133,18 @@ export const ScheduleCardList: React.FC<ScheduleCardListProps> = ({
                   <p className="mt-1 text-xs text-text-muted">{periodLabel(item)}</p>
                 </div>
 
-                <div className="mt-4 space-y-2 border-t border-surface-border pt-3 text-sm text-text-body">
+                <div className="mt-4 space-y-2 border-t border-surface-border pt-3 text-xs text-text-body">
                   <p className="flex items-center gap-2">
-                    <span className="text-primary">
-                      <Icon type="clock" />
-                    </span>
-                    {item.courseName || "Khóa học"}
+                    <Clock className="h-4 w-4 text-primary shrink-0" />
+                    <span>Khóa học: {item.courseName || "Đang cập nhật"}</span>
                   </p>
                   <p className="flex items-center gap-2">
-                    <span className="text-primary">
-                      <Icon type="pin" />
-                    </span>
-                    Phòng: {item.roomName || "Chưa xếp phòng"}
+                    <MapPin className="h-4 w-4 text-primary shrink-0" />
+                    <span>Phòng: {item.roomName || "Chưa xếp phòng"}</span>
                   </p>
                   <p className="flex items-center gap-2">
-                    <span className="text-primary">
-                      <Icon type="teacher" />
-                    </span>
-                    GV: {item.teacherUserFullName || "Đang cập nhật"}
+                    <User className="h-4 w-4 text-primary shrink-0" />
+                    <span>GV: {item.teacherUserFullName || "Đang cập nhật"}</span>
                   </p>
                 </div>
               </article>
@@ -193,3 +155,5 @@ export const ScheduleCardList: React.FC<ScheduleCardListProps> = ({
     </div>
   );
 };
+
+export default ScheduleCardList;

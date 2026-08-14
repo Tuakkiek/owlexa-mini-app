@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { RotateCw, Search, ExternalLink } from "lucide-react";
 import { httpClient, type AppApiError } from "@/core/api/httpClient";
 import {
   DOCUMENT_TYPE_META,
@@ -85,9 +86,11 @@ export const DocumentsPage: React.FC = () => {
           <button
             onClick={() => fetchDocuments()}
             disabled={isLoading}
-            className="rounded-full border border-surface-border bg-white px-3 py-2 text-xs font-semibold text-text-body disabled:opacity-50"
+            aria-label="Làm mới"
+            className="flex items-center gap-1.5 rounded-full border border-surface-border bg-white px-3 py-2 text-xs font-semibold text-text-body disabled:opacity-50"
           >
-            {isLoading ? "Đang tải..." : "Làm mới"}
+            <RotateCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+            <span>{isLoading ? "Đang tải..." : "Làm mới"}</span>
           </button>
         </div>
 
@@ -131,13 +134,16 @@ export const DocumentsPage: React.FC = () => {
             <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
               Tìm kiếm
             </label>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Tên tài liệu, lớp học, mô tả..."
-              className="h-12 w-full rounded-[16px] border border-surface-border bg-white px-4 text-sm text-text-heading outline-none focus:border-primary"
-            />
+            <div className="relative">
+              <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-text-muted" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Tên tài liệu, lớp học, mô tả..."
+                className="h-12 w-full rounded-[16px] border border-surface-border bg-white pl-10 pr-4 text-sm text-text-heading outline-none focus:border-primary"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -254,9 +260,10 @@ export const DocumentsPage: React.FC = () => {
                   href={doc.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-4 inline-flex w-full items-center justify-center rounded-[16px] bg-primary py-3 text-sm font-semibold text-white"
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-primary py-3 text-sm font-semibold text-white"
                 >
-                  {meta.actionLabel}
+                  <ExternalLink className="h-4 w-4" />
+                  <span>{meta.actionLabel}</span>
                 </a>
               </article>
             );

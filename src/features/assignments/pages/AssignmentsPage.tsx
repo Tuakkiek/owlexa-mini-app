@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "zmp-ui";
+import { Lock, RotateCw, History, Play, CircleCheck } from "lucide-react";
 import { httpClient, type AppApiError } from "@/core/api/httpClient";
 import { PATHS } from "@/router/routes";
 import {
@@ -9,6 +10,7 @@ import {
 } from "../assignmentTypes";
 import {
   SUBMISSION_STATUS_META,
+  type AIGradingJobStatus,
   type StartAttemptRequest,
   type StudentAttemptDetailResponse,
   type StudentAttemptSummaryResponse,
@@ -44,6 +46,26 @@ const formatRemaining = (value: string | null) => {
 };
 
 const buildAttemptPath = (attemptId: number) => `/assignments/attempt/${attemptId}`;
+
+const aiGradingScoreLabel: Partial<Record<AIGradingJobStatus, string>> = {
+  PENDING: "Đang chấm",
+  RUNNING: "Đang chấm",
+  FAILED: "Chưa chấm được",
+};
+
+const formatAttemptScore = (
+  attempt: StudentAttemptSummaryResponse,
+  showScore: boolean,
+) => {
+  if (!showScore) return "Không hiển thị";
+  if (attempt.status === "IN_PROGRESS") return "-";
+  if (attempt.displayedScore == null) {
+    return attempt.aiGradingStatus
+      ? (aiGradingScoreLabel[attempt.aiGradingStatus] ?? "-")
+      : "-";
+  }
+  return `${attempt.displayedScore} / ${attempt.maxScore ?? "-"}`;
+};
 
 export const AssignmentsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -178,9 +200,11 @@ export const AssignmentsPage: React.FC = () => {
           <button
             onClick={() => fetchAssignments()}
             disabled={isLoading}
-            className="rounded-full border border-surface-border bg-white px-3 py-2 text-xs font-semibold text-text-body disabled:opacity-50"
+            aria-label="Làm mới"
+            className="flex items-center gap-1.5 rounded-full border border-surface-border bg-white px-3 py-2 text-xs font-semibold text-text-body disabled:opacity-50"
           >
-            {isLoading ? "Đang tải..." : "Làm mới"}
+            <RotateCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+            <span>{isLoading ? "Đang tải..." : "Làm mới"}</span>
           </button>
         </div>
 
@@ -258,8 +282,9 @@ export const AssignmentsPage: React.FC = () => {
                         {statusMeta.label}
                       </span>
                       {assignment.hasPassword && (
-                        <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-semibold text-amber-700">
-                          Có mật khẩu
+                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-semibold text-amber-700">
+                          <Lock className="h-3 w-3" />
+                          <span>Có mật khẩu</span>
                         </span>
                       )}
                     </div>
@@ -313,16 +338,18 @@ export const AssignmentsPage: React.FC = () => {
                   <button
                     onClick={() => handleStartClick(assignment)}
                     disabled={pendingStartId === assignment.id}
-                    className="rounded-[16px] bg-primary py-3 text-sm font-semibold text-white disabled:opacity-50"
+                    className="flex items-center justify-center gap-1.5 rounded-[16px] bg-primary py-3 text-sm font-semibold text-white disabled:opacity-50"
                   >
-                    {pendingStartId === assignment.id ? "Đang mở..." : "Bắt đầu / Tiếp tục"}
+                    <Play className="h-4 w-4" />
+                    <span>{pendingStartId === assignment.id ? "Đang mở..." : "Bắt đầu / Tiếp tục"}</span>
                   </button>
                   <button
                     onClick={() => openAttemptHistory(assignment)}
                     disabled={pendingHistoryId === assignment.id}
-                    className="rounded-[16px] border border-surface-border bg-white py-3 text-sm font-semibold text-text-body disabled:opacity-50"
+                    className="flex items-center justify-center gap-1.5 rounded-[16px] border border-surface-border bg-white py-3 text-sm font-semibold text-text-body disabled:opacity-50"
                   >
-                    {pendingHistoryId === assignment.id ? "Đang tải..." : "Lịch sử làm bài"}
+                    <History className="h-4 w-4" />
+                    <span>{pendingHistoryId === assignment.id ? "Đang tải..." : "Lịch sử làm bài"}</span>
                   </button>
                 </div>
               </article>
@@ -454,7 +481,7 @@ export const AssignmentsPage: React.FC = () => {
                         Hết hạn: {formatDateTime(attempt.expiresAt)}
                       </span>
                       <span className="rounded-full bg-surface-page px-3 py-1.5 text-text-body">
-                        Điểm: {attempt.displayedScore ?? attempt.autoScore ?? "-"} / {attempt.maxScore ?? "-"}
+                        Điểm: {formatAttemptScore(attempt, historyAssignment.showScore)}
                       </span>
                     </div>
 

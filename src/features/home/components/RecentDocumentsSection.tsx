@@ -1,4 +1,5 @@
 import React from "react";
+import { ExternalLink } from "lucide-react";
 import { useNavigate } from "zmp-ui";
 import { PATHS } from "@/router/routes";
 import {
@@ -101,7 +102,7 @@ export const RecentDocumentsSection: React.FC<RecentDocumentsSectionProps> = ({
                       Đăng ngày {formatDate(doc.uploadedAt)}
                     </p>
                   </div>
-                  <span className="ml-3 text-lg font-semibold text-primary">↗</span>
+                  <ExternalLink className="ml-3 h-4 w-4 shrink-0 text-primary" />
                 </div>
               </a>
             );

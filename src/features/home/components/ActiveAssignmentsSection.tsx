@@ -1,4 +1,5 @@
 import React from "react";
+import { ChevronRight, Lock } from "lucide-react";
 import { useNavigate } from "zmp-ui";
 import { PATHS } from "@/router/routes";
 import {
@@ -89,8 +90,9 @@ export const ActiveAssignmentsSection: React.FC<ActiveAssignmentsSectionProps> =
                     {ASSIGNMENT_TYPE_LABEL[assignment.type]}
                   </span>
                   {assignment.hasPassword && (
-                    <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-semibold text-amber-700">
-                      Có mật khẩu
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-semibold text-amber-700">
+                      <Lock className="h-3 w-3" />
+                      <span>Có mật khẩu</span>
                     </span>
                   )}
                 </div>
@@ -101,7 +103,7 @@ export const ActiveAssignmentsSection: React.FC<ActiveAssignmentsSectionProps> =
                   Hạn nộp: {formatDateTime(assignment.dueAt)}
                 </p>
               </div>
-              <span className="ml-3 text-lg font-semibold text-primary">›</span>
+              <ChevronRight className="ml-3 h-5 w-5 shrink-0 text-primary" />
             </button>
           ))}
         </div>

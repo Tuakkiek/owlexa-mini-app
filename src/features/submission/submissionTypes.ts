@@ -7,6 +7,12 @@ export type SubmissionAttemptStatus =
   | "SUBMITTED"
   | "AUTO_SUBMITTED";
 
+export type AIGradingJobStatus =
+  | "PENDING"
+  | "RUNNING"
+  | "COMPLETED"
+  | "FAILED";
+
 export interface StartAttemptRequest {
   password?: string;
 }
@@ -58,6 +64,8 @@ export interface StudentAttemptSummaryResponse {
   autoScore: number | null;
   displayedScore?: number | null;
   maxScore: number | null;
+  aiGradingStatus?: AIGradingJobStatus | null;
+  aiGradingMessage?: string | null;
 }
 
 export interface StudentAttemptDetailResponse {
@@ -84,6 +92,8 @@ export interface StudentAttemptDetailResponse {
   showScore?: boolean;
   allowReview?: boolean;
   hasPassword?: boolean;
+  aiGradingStatus?: AIGradingJobStatus | null;
+  aiGradingMessage?: string | null;
 }
 
 export const SUBMISSION_STATUS_META: Record<

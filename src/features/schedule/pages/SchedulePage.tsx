@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { httpClient, type AppApiError } from "@/core/api/httpClient";
-import { ScheduleCardList } from "../components/ScheduleCardList";
+import { ScheduleCardList, type DaySection } from "../components/ScheduleCardList";
 import {
   WEEKDAYS_MAP,
   normalizeDayOfWeek,
@@ -9,12 +9,6 @@ import {
 } from "../scheduleTypes";
 
 type FilterKey = "ALL" | "STUDY" | "EXAM";
-
-type DaySection = {
-  day: DayOfWeek;
-  date: Date;
-  schedules: ScheduleResponse[];
-};
 
 const DAYS_ORDER: DayOfWeek[] = [
   "MONDAY",
@@ -212,7 +206,7 @@ export const SchedulePage: React.FC = () => {
           const dateA = getScheduleDate(a, weekStart)?.getTime() ?? 0;
           const dateB = getScheduleDate(b, weekStart)?.getTime() ?? 0;
           if (dateA !== dateB) return dateA - dateB;
-          return a.startTime.localeCompare(b.startTime);
+          return String(a.startTime).localeCompare(String(b.startTime));
         }),
     [filter, schedules, search, weekStart],
   );
@@ -238,14 +232,14 @@ export const SchedulePage: React.FC = () => {
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
           Lịch học
         </p>
-        <h1 className="mt-2 text-[40px] font-semibold leading-none text-text-heading">
-          Lịch học
+        <h1 className="mt-2 text-2xl font-bold leading-none text-text-heading">
+          Thời khóa biểu
         </h1>
-        <p className="mt-3 max-w-[320px] text-sm leading-6 text-text-muted">
-          Theo dõi lịch học và lịch thi theo tuần
+        <p className="mt-2 max-w-[320px] text-xs leading-5 text-text-muted">
+          Theo dõi lịch học và lịch thi theo từng tuần
         </p>
 
-        <div className="mt-5 flex flex-wrap gap-3">
+        <div className="mt-4 flex flex-wrap gap-3">
           <button
             type="button"
             onClick={() => {
@@ -253,7 +247,7 @@ export const SchedulePage: React.FC = () => {
               fetchSchedules();
             }}
             disabled={isLoading}
-            className="inline-flex min-h-12 items-center gap-2 rounded-btn border border-surface-border bg-white px-5 text-sm font-medium text-text-body shadow-sm disabled:opacity-50"
+            className="inline-flex min-h-10 items-center gap-2 rounded-btn border border-surface-border bg-white px-4 text-xs font-medium text-text-body shadow-sm disabled:opacity-50"
           >
             <Icon type="calendar" />
             Hôm nay
@@ -261,7 +255,7 @@ export const SchedulePage: React.FC = () => {
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex min-h-12 items-center gap-2 rounded-btn border border-primary bg-primary px-5 text-sm font-medium text-white shadow-sm"
+            className="inline-flex min-h-10 items-center gap-2 rounded-btn border border-primary bg-primary px-4 text-xs font-medium text-white shadow-sm"
           >
             <Icon type="print" />
             In lịch
@@ -283,7 +277,7 @@ export const SchedulePage: React.FC = () => {
                 key={item.key}
                 type="button"
                 onClick={() => setFilter(item.key)}
-                className={`min-h-11 rounded-[10px] px-5 text-sm font-medium transition-all ${
+                className={`min-h-9 rounded-[10px] px-4 text-xs font-medium transition-all ${
                   filter === item.key ? "bg-white text-primary shadow-sm" : "text-text-body"
                 }`}
               >
@@ -301,7 +295,7 @@ export const SchedulePage: React.FC = () => {
             >
               <Icon type="chevronLeft" />
             </button>
-            <div className="flex h-11 min-w-0 flex-1 items-center justify-center border-x border-surface-border px-4 text-sm font-semibold text-text-heading">
+            <div className="flex h-11 min-w-0 flex-1 items-center justify-center border-x border-surface-border px-4 text-xs font-semibold text-text-heading">
               {formatRange(weekStart)}
             </div>
             <button
@@ -322,13 +316,13 @@ export const SchedulePage: React.FC = () => {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Tìm môn học, giảng viên, phòng..."
-              className="h-11 w-full rounded-btn border border-surface-border bg-white pl-11 pr-4 text-sm text-text-heading outline-none placeholder:text-text-muted focus:border-primary"
+              className="h-11 w-full rounded-btn border border-surface-border bg-white pl-11 pr-4 text-xs text-text-heading outline-none placeholder:text-text-muted focus:border-primary"
             />
           </label>
 
           <div className="flex items-center justify-between px-1">
             <p className="text-xs font-medium text-text-muted">
-              {WEEKDAYS_MAP[DAYS_ORDER[0]].short} - {WEEKDAYS_MAP[DAYS_ORDER[6]].short}
+              {WEEKDAYS_MAP[DAYS_ORDER[0]]?.short} - {WEEKDAYS_MAP[DAYS_ORDER[6]]?.short}
             </p>
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-primary">
