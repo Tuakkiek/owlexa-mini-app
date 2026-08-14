@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "zmp-ui";
 import { authService } from "@/core/auth/authService";
 import type { AppApiError } from "@/core/api/httpClient";
 import { Button } from "@/components/ui/Button";

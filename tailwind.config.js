@@ -27,13 +27,17 @@ module.exports = {
         input: "12px",
         btn: "12px",
         card: "16px",
+        modal: "16px",
+        drawer: "16px",
+        dropdown: "12px",
+        badge: "9999px",
       },
       fontFamily: {
         sans: [
           "Inter",
           "-apple-system",
           "BlinkMacSystemFont",
-          '"Segoe UI"',
+          "Segoe UI",
           "Roboto",
           "Arial",
           "sans-serif",

@@ -1,25 +1,22 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "zmp-ui";
+import { useAtomValue } from "jotai";
+import { userProfileAtom } from "@/core/auth/authStore";
 import { httpClient, type AppApiError } from "@/core/api/httpClient";
-import { PATHS } from "@/router/routes";
-import { ProfileSummarySection } from "../components/ProfileSummarySection";
-import { NextSchedulesSection } from "../components/NextSchedulesSection";
-import { UnpaidFeesSection } from "../components/UnpaidFeesSection";
+import { HomeHeader } from "../components/HomeHeader";
+import { StudentInfoCard } from "../components/StudentInfoCard";
+import { HomeStats } from "../components/HomeStats";
+import { QuickAccessSection } from "../components/QuickAccessSection";
+import { UpcomingScheduleSection } from "../components/UpcomingScheduleSection";
 import { ActiveAssignmentsSection } from "../components/ActiveAssignmentsSection";
 import { RecentDocumentsSection } from "../components/RecentDocumentsSection";
+import { UnpaidFeesSection } from "../components/UnpaidFeesSection";
 import type { ScheduleResponse } from "@/features/schedule/scheduleTypes";
 import type { FeeRecordResponse } from "@/features/fees/feeTypes";
 import type { StudentAssignmentListResponse } from "@/features/assignments/assignmentTypes";
 import type { StudentDocumentResponse } from "@/features/documents/documentTypes";
 
-const formatMoney = (amount: number) =>
-  new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-
 export const HomePage: React.FC = () => {
-  const navigate = useNavigate();
+  const user = useAtomValue(userProfileAtom);
 
   const [schedules, setSchedules] = useState<ScheduleResponse[]>([]);
   const [isSchedulesLoading, setIsSchedulesLoading] = useState(true);
@@ -127,95 +124,23 @@ export const HomePage: React.FC = () => {
     return sum + Math.max(fee.amount - discount - fee.paidAmount, 0);
   }, 0);
 
-  const quickActions = [
-    {
-      title: "Xem lịch học",
-      description: "Theo dõi ca học trong tuần",
-      path: PATHS.SCHEDULE,
-    },
-    {
-      title: "Xem điểm danh",
-      description: "Kiểm tra trạng thái có mặt theo lớp",
-      path: PATHS.ATTENDANCE,
-    },
-    {
-      title: "Bài tập của tôi",
-      description: "Theo dõi bài được giao và deadline",
-      path: PATHS.ASSIGNMENTS,
-    },
-    {
-      title: "Tài liệu học tập",
-      description: "Mở PDF, video và tài liệu lớp học",
-      path: PATHS.DOCUMENTS,
-    },
-    {
-      title: "Thanh toán QR",
-      description: "Mở hóa đơn và quét VietQR",
-      path: PATHS.FEES,
-    },
-  ];
-
   return (
-    <div className="mx-auto w-full max-w-[520px] space-y-6 px-4 pb-6 pt-4">
-      <ProfileSummarySection />
+    <div className="mx-auto max-w-[520px] space-y-5 px-4 pb-6 pt-2">
+      <HomeHeader user={user} />
 
-      <section className="grid grid-cols-2 gap-3">
-        <div className="rounded-[22px] border border-surface-border bg-white p-4 shadow-sm">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
-            Ca học / tuần
-          </p>
-          <p className="mt-3 text-2xl font-bold text-text-heading">
-            {isSchedulesLoading ? "..." : schedules.length}
-          </p>
-          <p className="mt-1 text-xs text-text-muted">
-            {schedulesError ? "Chưa lấy được dữ liệu" : "Lịch được đồng bộ tự động"}
-          </p>
-        </div>
-        <div className="rounded-[22px] border border-surface-border bg-white p-4 shadow-sm">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
-            Học phí còn nợ
-          </p>
-          <p className="mt-3 text-lg font-bold text-text-heading">
-            {isFeesLoading ? "..." : formatMoney(totalDue)}
-          </p>
-          <p className="mt-1 text-xs text-text-muted">
-            {feesError ? "Chưa lấy được dữ liệu" : `${unpaidFees.length} hóa đơn cần theo dõi`}
-          </p>
-        </div>
-      </section>
+      <StudentInfoCard user={user} />
 
-      <section className="rounded-card border border-surface-border bg-white p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-              Truy cập nhanh
-            </p>
-            <h3 className="mt-1 text-lg font-semibold text-text-heading">
-              Tác vụ học viên hay dùng
-            </h3>
-          </div>
-        </div>
+      <HomeStats
+        weeklySessionCount={schedules.length}
+        isSchedulesLoading={isSchedulesLoading}
+        schedulesError={schedulesError}
+        totalDue={totalDue}
+        unpaidFeeCount={unpaidFees.length}
+        isFeesLoading={isFeesLoading}
+        feesError={feesError}
+      />
 
-        <div className="mt-4 space-y-3">
-          {quickActions.map((action) => (
-            <button
-              key={action.path}
-              onClick={() => navigate(action.path)}
-              className="flex min-h-12 w-full items-center justify-between rounded-input border border-surface-border bg-surface-page px-4 py-3 text-left"
-            >
-              <div>
-                <p className="text-sm font-semibold text-text-heading">
-                  {action.title}
-                </p>
-                <p className="mt-1 text-xs text-text-muted">
-                  {action.description}
-                </p>
-              </div>
-              <span className="text-lg font-semibold text-primary">›</span>
-            </button>
-          ))}
-        </div>
-      </section>
+      <QuickAccessSection />
 
       <ActiveAssignmentsSection
         assignments={assignments}
@@ -231,7 +156,7 @@ export const HomePage: React.FC = () => {
         onRetry={() => fetchDocuments()}
       />
 
-      <NextSchedulesSection
+      <UpcomingScheduleSection
         schedules={schedules}
         isLoading={isSchedulesLoading}
         error={schedulesError}

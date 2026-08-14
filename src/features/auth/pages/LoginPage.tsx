@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useAtomValue } from "jotai";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "zmp-ui";
 import { LoginForm } from "../components/LoginForm";
 import { Card } from "@/components/ui/Card";
 import { authStateAtom } from "@/core/auth/authStore";
