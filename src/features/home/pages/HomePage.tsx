@@ -7,6 +7,9 @@ import { StudentInfoCard } from "../components/StudentInfoCard";
 import { HomeStats } from "../components/HomeStats";
 import { QuickAccessSection } from "../components/QuickAccessSection";
 import { UpcomingScheduleSection } from "../components/UpcomingScheduleSection";
+import { ActiveAssignmentsSection } from "../components/ActiveAssignmentsSection";
+import { RecentDocumentsSection } from "../components/RecentDocumentsSection";
+import { UnpaidFeesSection } from "../components/UnpaidFeesSection";
 import type { ScheduleResponse } from "@/features/schedule/scheduleTypes";
 import type { FeeRecordResponse } from "@/features/fees/feeTypes";
 import type { StudentAssignmentListResponse } from "@/features/assignments/assignmentTypes";
@@ -23,13 +26,13 @@ export const HomePage: React.FC = () => {
   const [isFeesLoading, setIsFeesLoading] = useState(true);
   const [feesError, setFeesError] = useState<string | null>(null);
 
-  const [, setAssignments] = useState<StudentAssignmentListResponse[]>([]);
-  const [, setIsAssignmentsLoading] = useState(true);
-  const [, setAssignmentsError] = useState<string | null>(null);
+  const [assignments, setAssignments] = useState<StudentAssignmentListResponse[]>([]);
+  const [isAssignmentsLoading, setIsAssignmentsLoading] = useState(true);
+  const [assignmentsError, setAssignmentsError] = useState<string | null>(null);
 
-  const [, setDocuments] = useState<StudentDocumentResponse[]>([]);
-  const [, setIsDocumentsLoading] = useState(true);
-  const [, setDocumentsError] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<StudentDocumentResponse[]>([]);
+  const [isDocumentsLoading, setIsDocumentsLoading] = useState(true);
+  const [documentsError, setDocumentsError] = useState<string | null>(null);
 
   const fetchSchedules = useCallback(async (signal?: AbortSignal) => {
     try {
@@ -139,11 +142,32 @@ export const HomePage: React.FC = () => {
 
       <QuickAccessSection />
 
+      <ActiveAssignmentsSection
+        assignments={assignments}
+        isLoading={isAssignmentsLoading}
+        error={assignmentsError}
+        onRetry={() => fetchAssignments()}
+      />
+
+      <RecentDocumentsSection
+        documents={documents}
+        isLoading={isDocumentsLoading}
+        error={documentsError}
+        onRetry={() => fetchDocuments()}
+      />
+
       <UpcomingScheduleSection
         schedules={schedules}
         isLoading={isSchedulesLoading}
         error={schedulesError}
         onRetry={() => fetchSchedules()}
+      />
+
+      <UnpaidFeesSection
+        fees={fees}
+        isLoading={isFeesLoading}
+        error={feesError}
+        onRetry={() => fetchFees()}
       />
     </div>
   );

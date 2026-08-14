@@ -78,3 +78,24 @@ export const getWeekdayInfo = (day?: DayOfWeek | number | string) => {
   return WEEKDAYS_MAP.MONDAY;
 };
 
+export const normalizeDayOfWeek = (day: string | number | null | undefined): DayOfWeek | null => {
+  if (typeof day === "number") {
+    return NUMBER_TO_DAY_MAP[day] ?? null;
+  }
+
+  if (typeof day !== "string") {
+    return null;
+  }
+
+  const normalizedDay = day.trim().toUpperCase();
+  if (normalizedDay in WEEKDAYS_MAP) {
+    return normalizedDay as DayOfWeek;
+  }
+
+  const numericDay = Number(normalizedDay);
+  if (Number.isInteger(numericDay)) {
+    return NUMBER_TO_DAY_MAP[numericDay] ?? null;
+  }
+
+  return null;
+};

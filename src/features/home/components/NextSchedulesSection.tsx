@@ -10,6 +10,36 @@ interface NextSchedulesSectionProps {
   onRetry: () => void;
 }
 
+const WEEK_ORDER = [
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+  "SUNDAY",
+];
+
+const DAY_NUMBER_LABELS: Record<string, string> = {
+  "1": "T2",
+  "2": "T3",
+  "3": "T4",
+  "4": "T5",
+  "5": "T6",
+  "6": "T7",
+  "7": "CN",
+};
+
+const getDayLabel = (day: string) =>
+  DAY_NUMBER_LABELS[day] || getWeekdayInfo(day)?.short || day;
+
+const getDayOrder = (day: string) => {
+  const numericDay = Number(day);
+  return Number.isInteger(numericDay) && numericDay >= 1 && numericDay <= 7
+    ? numericDay
+    : WEEK_ORDER.indexOf(day) + 1;
+};
+
 export const NextSchedulesSection: React.FC<NextSchedulesSectionProps> = ({
   schedules,
   isLoading,
@@ -17,7 +47,31 @@ export const NextSchedulesSection: React.FC<NextSchedulesSectionProps> = ({
   onRetry,
 }) => {
   const navigate = useNavigate();
-  const previewSchedules = schedules.slice(0, 3);
+  const previewSchedules = Array.from(
+    schedules.reduce((groups, schedule) => {
+      const key = [
+        schedule.classId,
+        schedule.startTime,
+        schedule.endTime,
+        schedule.teacherUserFullName,
+        schedule.roomName,
+      ].join("-");
+      const group = groups.get(key);
+
+      if (group) {
+        group.days.push(schedule.dayOfWeek);
+      } else {
+        groups.set(key, { schedule, days: [schedule.dayOfWeek] });
+      }
+
+      return groups;
+    }, new Map<string, { schedule: ScheduleResponse; days: string[] }>()).values(),
+  )
+    .map((group) => ({
+      ...group,
+      days: Array.from(new Set(group.days)).sort((a, b) => getDayOrder(a) - getDayOrder(b)),
+    }))
+    .slice(0, 3);
 
   return (
     <section className="rounded-[24px] border border-surface-border bg-surface-card p-4 shadow-sm">
@@ -65,16 +119,17 @@ export const NextSchedulesSection: React.FC<NextSchedulesSectionProps> = ({
         </div>
       ) : (
         <div className="mt-4 space-y-3">
-          {previewSchedules.map((item) => (
+          {previewSchedules.map(({ schedule: item, days }) => (
             <article
               key={item.id}
-              className="rounded-[20px] border border-surface-border bg-[linear-gradient(180deg,#ffffff_0%,#fff7ed_100%)] p-4"
+              className="rounded-card border border-surface-border bg-white p-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-primary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white">
-                      {getWeekdayInfo(item.dayOfWeek).short}
+                    <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-white">
+                      {days.map(getDayLabel).join(" · ")}
+                    </span>
                     </span>
                     <span className="text-[11px] font-medium text-text-muted">
                       {item.courseName || "Khóa học"}

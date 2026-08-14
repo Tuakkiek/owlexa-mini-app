@@ -38,6 +38,8 @@ module.exports = {
           "-apple-system",
           "BlinkMacSystemFont",
           "Segoe UI",
+          "Roboto",
+          "Arial",
           "sans-serif",
         ],
         mono: ["Roboto Mono", "monospace"],

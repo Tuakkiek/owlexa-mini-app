@@ -110,7 +110,7 @@ export const FeesPage: React.FC = () => {
       </section>
 
       {error && (
-        <div className="rounded-[16px] border border-error/20 bg-red-50 p-4 text-xs text-error">
+        <div role="alert" className="rounded-[16px] border border-error/20 bg-red-50 p-4 text-xs text-error">
           <p>{error}</p>
           <button
             type="button"

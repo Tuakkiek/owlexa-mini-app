@@ -7,8 +7,12 @@ interface MainLayoutProps {
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-surface-page font-sans text-text-body">
-      <main className="flex-1 overflow-y-auto pb-4">
+    <div className="relative min-h-screen bg-surface-page font-sans text-text-body">
+      <main
+        style={{
+          paddingBottom: "calc(var(--app-bottom-nav-height) + env(safe-area-inset-bottom) + var(--page-bottom-spacing))",
+        }}
+      >
         {children}
       </main>
       <BottomTabBar />

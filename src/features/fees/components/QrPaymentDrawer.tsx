@@ -20,9 +20,27 @@ interface QrPaymentDrawerProps {
   onCopy: (text: string, label: string) => void;
 }
 
-const formatMoney = (amount: number) => {
-  const formatted = amount.toLocaleString("vi-VN");
-  return `${formatted} đ`;
+const formatMoney = (amount: number | string) => {
+  const numericAmount =
+    typeof amount === "number" ? amount : Number(String(amount).replace(/,/g, ""));
+
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(Number.isFinite(numericAmount) ? numericAmount : 0);
+};
+
+const normalizeQrData = (qrData: BankTransferQrResponse | null) => {
+  if (!qrData) return null;
+
+  return {
+    imageSrc: qrData.qrImage || qrData.qrImageUrl || qrData.qrContent || "",
+    bankLabel: qrData.bankName || qrData.bankBin || "Đang cập nhật",
+    accountHolder: qrData.accountHolder || qrData.accountName || "",
+    accountNumber: qrData.accountNumber || qrData.accountNo || "",
+    transferContent: qrData.transferContent || qrData.description || "",
+    amount: qrData.amount,
+  };
 };
 
 export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
@@ -45,6 +63,8 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
     paymentState === "LOADING_QR" ||
     paymentState === "CANCELLING_PAYMENT";
 
+  const displayQr = normalizeQrData(qrData);
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/50 backdrop-blur-[1px]">
       <div
@@ -53,7 +73,7 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
       />
 
       <div
-        className="relative z-10 w-full max-h-[90vh] overflow-y-auto rounded-t-[16px] border-t border-surface-border bg-white p-5 shadow-xl"
+        className="relative z-10 w-full max-h-[90vh] overflow-y-auto rounded-t-card border-t border-surface-border bg-white p-5 shadow-xl"
         style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
       >
         {/* Drawer Header */}
@@ -75,7 +95,7 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
             type="button"
             onClick={onClose}
             disabled={isBusy}
-            aria-label="Đóng"
+            aria-label="Đóng thanh toán QR"
             className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-surface-hover text-text-muted transition-colors hover:text-text-heading disabled:opacity-50"
           >
             <X className="h-4 w-4" />
@@ -90,7 +110,7 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
         )}
 
         {error && (
-          <div className="mt-4 flex items-center gap-2 rounded-[12px] border border-error/20 bg-red-50 p-3 text-xs text-error">
+          <div role="alert" className="mt-4 flex items-center gap-2 rounded-[12px] border border-error/20 bg-red-50 p-3 text-xs text-error">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -106,16 +126,22 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
               {paymentState === "CANCELLING_PAYMENT" && "Đang hủy giao dịch..."}
             </p>
           </div>
-        ) : qrData ? (
+        ) : displayQr ? (
           <div className="space-y-4 pt-4">
             {/* QR Image Box */}
             <div className="flex flex-col items-center justify-center">
-              <div className="rounded-[16px] border border-surface-border bg-white p-3 shadow-sm">
-                <img
-                  src={qrData.qrImageUrl}
-                  alt="VietQR Code"
-                  className="h-48 w-48 object-contain"
-                />
+              <div className="rounded-card border border-surface-border bg-white p-3 shadow-sm">
+                {displayQr.imageSrc ? (
+                  <img
+                    src={displayQr.imageSrc}
+                    alt="VietQR Code"
+                    className="h-48 w-48 object-contain"
+                  />
+                ) : (
+                  <div className="flex h-48 w-48 items-center justify-center text-xs text-text-muted">
+                    Không có ảnh QR
+                  </div>
+                )}
               </div>
               <p className="mt-2 text-xs text-text-muted">
                 Quét mã bằng ứng dụng ngân hàng hỗ trợ VietQR
@@ -127,7 +153,8 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
               <div className="flex items-center justify-between gap-3">
                 <span className="text-text-muted">Ngân hàng</span>
                 <span className="text-right font-semibold text-text-heading truncate">
-                  BIN {qrData.bankBin} ({qrData.accountName})
+                  {displayQr.bankLabel}
+                  {displayQr.accountHolder ? ` (${displayQr.accountHolder})` : ""}
                 </span>
               </div>
 
@@ -135,12 +162,13 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
                 <span className="text-text-muted">Số tài khoản</span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono font-bold text-text-heading">
-                    {qrData.accountNo}
+                    {displayQr.accountNumber || "Đang cập nhật"}
                   </span>
                   <button
                     type="button"
-                    onClick={() => onCopy(qrData.accountNo, "số tài khoản")}
-                    className="flex items-center gap-1 rounded-full bg-primary-light px-2.5 py-0.5 text-[11px] font-semibold text-primary transition-colors hover:bg-orange-100"
+                    onClick={() => displayQr.accountNumber && onCopy(displayQr.accountNumber, "số tài khoản")}
+                    disabled={!displayQr.accountNumber}
+                    className="flex items-center gap-1 rounded-full bg-primary-light px-2.5 py-0.5 text-[11px] font-semibold text-primary transition-colors hover:bg-orange-100 disabled:opacity-50"
                   >
                     <Copy className="h-3 w-3" />
                     <span>Sao chép</span>
@@ -151,7 +179,7 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
               <div className="flex items-center justify-between gap-3 border-t border-surface-border/80 pt-2.5">
                 <span className="text-text-muted">Số tiền</span>
                 <span className="font-bold text-primary text-sm">
-                  {formatMoney(qrData.amount)}
+                  {formatMoney(displayQr.amount)}
                 </span>
               </div>
 
@@ -159,12 +187,13 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
                 <span className="text-text-muted">Nội dung CK</span>
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="font-mono font-bold text-text-heading truncate">
-                    {qrData.description}
+                    {displayQr.transferContent || "Đang cập nhật"}
                   </span>
                   <button
                     type="button"
-                    onClick={() => onCopy(qrData.description, "nội dung chuyển khoản")}
-                    className="flex items-center gap-1 shrink-0 rounded-full bg-primary-light px-2.5 py-0.5 text-[11px] font-semibold text-primary transition-colors hover:bg-orange-100"
+                    onClick={() => displayQr.transferContent && onCopy(displayQr.transferContent, "nội dung chuyển khoản")}
+                    disabled={!displayQr.transferContent}
+                    className="flex items-center gap-1 shrink-0 rounded-full bg-primary-light px-2.5 py-0.5 text-[11px] font-semibold text-primary transition-colors hover:bg-orange-100 disabled:opacity-50"
                   >
                     <Copy className="h-3 w-3" />
                     <span>Sao chép</span>

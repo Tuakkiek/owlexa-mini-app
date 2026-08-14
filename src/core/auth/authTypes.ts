@@ -49,3 +49,5 @@ export interface UserInfo {
   centerId: number | null;
   permissions: string[];
 }
+
+export type AccountResponse = UserInfo;
