@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "zmp-ui";
 import { PATHS } from "@/router/routes";
-import { WEEKDAYS_MAP, type ScheduleResponse } from "@/features/schedule/scheduleTypes";
+import { getWeekdayInfo, type ScheduleResponse } from "@/features/schedule/scheduleTypes";
 
 interface NextSchedulesSectionProps {
   schedules: ScheduleResponse[];
@@ -74,7 +74,7 @@ export const NextSchedulesSection: React.FC<NextSchedulesSectionProps> = ({
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full bg-primary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white">
-                      {WEEKDAYS_MAP[item.dayOfWeek]?.short || item.dayOfWeek}
+                      {getWeekdayInfo(item.dayOfWeek).short}
                     </span>
                     <span className="text-[11px] font-medium text-text-muted">
                       {item.courseName || "Khóa học"}

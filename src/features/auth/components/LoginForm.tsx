@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "zmp-ui";
 import { authService } from "@/core/auth/authService";
 import type { AppApiError } from "@/core/api/httpClient";
+import { PATHS } from "@/router/routes";
 
 export const LoginForm: React.FC = () => {
+  const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +24,7 @@ export const LoginForm: React.FC = () => {
         password: password.trim(),
         deviceType: "MOBILE",
       });
+      navigate(PATHS.HOME, { replace: true });
     } catch (err: any) {
       const apiErr = err as AppApiError;
       setError(apiErr.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");

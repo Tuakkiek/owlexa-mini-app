@@ -1,4 +1,5 @@
 import React from "react";
+import { QrCode, Calendar, CircleCheck } from "lucide-react";
 import { FEE_STATUS_META, type FeeRecordResponse } from "../feeTypes";
 
 interface FeeCardListProps {
@@ -7,11 +8,10 @@ interface FeeCardListProps {
   onPayQr: (feeRecord: FeeRecordResponse) => void;
 }
 
-const formatMoney = (amount: number) =>
-  new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
+const formatMoney = (amount: number) => {
+  const formatted = amount.toLocaleString("vi-VN");
+  return `${formatted} đ`;
+};
 
 export const FeeCardList: React.FC<FeeCardListProps> = ({
   fees,
@@ -24,7 +24,7 @@ export const FeeCardList: React.FC<FeeCardListProps> = ({
         {[1, 2].map((idx) => (
           <div
             key={idx}
-            className="h-36 animate-pulse rounded-[24px] border border-surface-border bg-white p-4"
+            className="h-[140px] animate-pulse rounded-[16px] border border-surface-border bg-white p-4 shadow-sm"
           />
         ))}
       </div>
@@ -33,11 +33,11 @@ export const FeeCardList: React.FC<FeeCardListProps> = ({
 
   if (fees.length === 0) {
     return (
-      <div className="rounded-[24px] border border-dashed border-surface-border bg-white px-4 py-12 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
-          OK
+      <div className="rounded-[16px] border border-dashed border-surface-border bg-white px-4 py-10 text-center shadow-sm">
+        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+          <CircleCheck className="h-5 w-5" />
         </div>
-        <p className="mt-4 text-sm font-semibold text-text-heading">
+        <p className="mt-3 text-sm font-semibold text-text-heading">
           Bạn đã hoàn thành tất cả các khoản học phí
         </p>
         <p className="mt-1 text-xs text-text-muted">
@@ -58,25 +58,26 @@ export const FeeCardList: React.FC<FeeCardListProps> = ({
         return (
           <article
             key={item.id}
-            className="rounded-[24px] border border-surface-border bg-white p-4 shadow-sm"
+            className="rounded-[16px] border border-surface-border bg-white p-4 shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="text-base font-bold text-text-heading">
+                <h3 className="text-base font-bold text-text-heading truncate">
                   {item.className}
                 </h3>
-                <p className="mt-1 text-xs text-text-muted">
-                  Hạn nộp: {item.dueDate}
-                </p>
+                <div className="mt-1 flex items-center gap-1 text-xs text-text-muted">
+                  <Calendar className="h-3.5 w-3.5 shrink-0 text-text-muted" />
+                  <span>Hạn nộp: {item.dueDate}</span>
+                </div>
               </div>
               <span
-                className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${meta.bgClass} ${meta.textClass} ${meta.borderClass}`}
+                className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase shrink-0 ${meta.bgClass} ${meta.textClass} ${meta.borderClass}`}
               >
                 {meta.label}
               </span>
             </div>
 
-            <div className="mt-4 space-y-2 rounded-[20px] bg-surface-page p-4 text-sm">
+            <div className="mt-3 space-y-2 rounded-[12px] bg-surface-page p-3.5 text-xs">
               <div className="flex items-center justify-between text-text-body">
                 <span>Tổng học phí</span>
                 <span className="font-semibold text-text-heading">
@@ -93,9 +94,13 @@ export const FeeCardList: React.FC<FeeCardListProps> = ({
                 </div>
               )}
 
-              <div className="flex items-center justify-between border-t border-surface-border pt-2">
+              <div className="flex items-center justify-between border-t border-surface-border/80 pt-2">
                 <span className="font-medium text-text-body">Còn nợ</span>
-                <span className={`text-base font-bold ${isPaid ? "text-emerald-700" : "text-primary"}`}>
+                <span
+                  className={`text-sm font-bold ${
+                    isPaid ? "text-emerald-700" : "text-primary"
+                  }`}
+                >
                   {formatMoney(remaining)}
                 </span>
               </div>
@@ -103,10 +108,12 @@ export const FeeCardList: React.FC<FeeCardListProps> = ({
 
             {!isPaid && (
               <button
+                type="button"
                 onClick={() => onPayQr(item)}
-                className="mt-4 w-full rounded-[16px] bg-primary py-3 text-sm font-semibold text-white"
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-[12px] bg-primary py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover active:bg-orange-700"
               >
-                Thanh toán bằng QR
+                <QrCode className="h-4 w-4" />
+                <span>Thanh toán bằng QR</span>
               </button>
             )}
           </article>
@@ -115,3 +122,5 @@ export const FeeCardList: React.FC<FeeCardListProps> = ({
     </div>
   );
 };
+
+export default FeeCardList;

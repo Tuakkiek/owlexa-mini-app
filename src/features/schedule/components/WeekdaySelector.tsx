@@ -29,17 +29,22 @@ export const WeekdaySelector: React.FC<WeekdaySelectorProps> = ({
         return (
           <button
             key={day}
+            type="button"
             onClick={() => onSelectDay(day)}
-            className={`min-w-[64px] rounded-[18px] border px-3 py-2.5 text-center transition-colors ${
+            className={`min-w-[64px] shrink-0 rounded-[12px] border px-3 py-2 text-center transition-colors ${
               isSelected
                 ? "border-primary bg-primary text-white shadow-sm"
-                : "border-surface-border bg-surface-card text-text-body"
+                : "border-surface-border bg-white text-text-body hover:bg-surface-hover active:bg-gray-100"
             }`}
           >
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em]">
+            <span className="block text-[11px] font-bold uppercase tracking-wider">
               {info.short}
             </span>
-            <span className={`mt-1 block text-[10px] ${isSelected ? "text-white/80" : "text-text-muted"}`}>
+            <span
+              className={`mt-0.5 block text-[10px] ${
+                isSelected ? "font-medium text-white/90" : "text-text-muted"
+              }`}
+            >
               {info.label}
             </span>
           </button>
@@ -48,3 +53,5 @@ export const WeekdaySelector: React.FC<WeekdaySelectorProps> = ({
     </div>
   );
 };
+
+export default WeekdaySelector;

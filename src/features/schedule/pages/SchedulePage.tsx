@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { CalendarDays, Calendar, RotateCw } from "lucide-react";
 import { httpClient, type AppApiError } from "@/core/api/httpClient";
 import { WeekdaySelector } from "../components/WeekdaySelector";
 import { ScheduleCardList } from "../components/ScheduleCardList";
-import { WEEKDAYS_MAP, type DayOfWeek, type ScheduleResponse } from "../scheduleTypes";
+import { WEEKDAYS_MAP, getWeekdayInfo, type DayOfWeek, type ScheduleResponse } from "../scheduleTypes";
 
 const DAYS_ORDER: DayOfWeek[] = [
   "MONDAY",
@@ -49,73 +50,98 @@ export const SchedulePage: React.FC = () => {
     return () => controller.abort();
   }, [fetchSchedules]);
 
-  const filteredSchedules = schedules.filter((item) => item.dayOfWeek === selectedDay);
+  const selectedDayInfo = getWeekdayInfo(selectedDay);
+  const filteredSchedules = schedules.filter(
+    (item) => getWeekdayInfo(item.dayOfWeek).dayNumber === selectedDayInfo.dayNumber,
+  );
   const totalSessions = schedules.length;
 
   return (
-    <div className="space-y-4 px-4 pb-6 pt-4">
-      <section className="rounded-[24px] bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_55%,#ffedd5_100%)] p-5 shadow-sm">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-              Lịch học
-            </p>
-            <h1 className="mt-1 text-[24px] font-bold leading-tight text-text-heading">
-              Thời khóa biểu tuần
-            </h1>
-            <p className="mt-2 text-sm text-text-muted">
-              Theo dõi ca học theo từng ngày và kiểm tra giáo viên, phòng học.
-            </p>
-          </div>
-          <button
-            onClick={() => fetchSchedules()}
-            disabled={isLoading}
-            className="rounded-full border border-surface-border bg-white px-3 py-2 text-xs font-semibold text-text-body disabled:opacity-50"
-          >
-            {isLoading ? "Đang tải..." : "Làm mới"}
-          </button>
+    <div className="mx-auto max-w-[520px] space-y-4 px-4 pb-6 pt-2">
+      {/* Header */}
+      <header className="flex items-center justify-between pt-2">
+        <div>
+          <span className="inline-flex items-center rounded-full border border-primary bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+            LỊCH HỌC
+          </span>
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-text-heading">
+            Thời khóa biểu
+          </h1>
+          <p className="mt-0.5 text-xs text-text-muted">
+            Theo dõi ca học theo từng ngày trong tuần
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={() => fetchSchedules()}
+          disabled={isLoading}
+          aria-label="Làm mới"
+          className="flex h-10 w-10 items-center justify-center rounded-[12px] border border-surface-border bg-white text-text-heading shadow-sm transition-colors hover:bg-surface-hover active:bg-gray-100 disabled:opacity-50"
+        >
+          <RotateCw className={`h-5 w-5 text-gray-700 ${isLoading ? "animate-spin" : ""}`} />
+        </button>
+      </header>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="rounded-[18px] border border-surface-border bg-white px-4 py-3">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
-              Tổng ca / tuần
-            </p>
-            <p className="mt-2 text-xl font-bold text-text-heading">
+      {/* Summary Stats */}
+      <section className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col justify-between rounded-[16px] border border-surface-border bg-white p-4 shadow-sm">
+          <div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-primary-light text-primary">
+              <CalendarDays className="h-5 w-5" />
+            </div>
+            <p className="mt-3 text-xs font-medium text-text-muted">Tổng ca / tuần</p>
+            <p className="mt-1 text-2xl font-bold text-text-heading">
               {isLoading ? "..." : totalSessions}
             </p>
           </div>
-          <div className="rounded-[18px] border border-surface-border bg-white px-4 py-3">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
-              Đang xem
-            </p>
-            <p className="mt-2 text-sm font-bold text-text-heading">
+          <p className="mt-2 text-xs text-text-muted truncate">
+            Đồng bộ từ trung tâm
+          </p>
+        </div>
+
+        <div className="flex flex-col justify-between rounded-[16px] border border-surface-border bg-white p-4 shadow-sm">
+          <div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-primary-light text-primary">
+              <Calendar className="h-5 w-5" />
+            </div>
+            <p className="mt-3 text-xs font-medium text-text-muted">Đang xem</p>
+            <p className="mt-1 truncate text-lg font-bold text-text-heading">
               {WEEKDAYS_MAP[selectedDay].label}
             </p>
           </div>
+          <p className="mt-2 text-xs text-primary font-medium truncate">
+            {filteredSchedules.length} ca học trong ngày
+          </p>
         </div>
       </section>
 
       {error && (
-        <div className="rounded-[18px] border border-error/20 bg-red-50 p-4 text-sm text-error">
-          {error}
+        <div className="rounded-[16px] border border-error/20 bg-red-50 p-4 text-xs text-error">
+          <p>{error}</p>
+          <button
+            type="button"
+            onClick={() => fetchSchedules()}
+            className="mt-2 font-semibold underline"
+          >
+            Thử lại
+          </button>
         </div>
       )}
 
-      <section className="rounded-[24px] border border-surface-border bg-white p-4 shadow-sm">
-        <div className="flex items-center justify-between">
+      {/* Weekday Selector Section */}
+      <section className="rounded-[16px] border border-surface-border bg-white p-4 shadow-sm">
+        <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-medium text-text-muted">
             Chọn ngày học
           </span>
-          <span className="text-xs font-semibold text-primary">
+          <span className="rounded-full bg-primary-light px-2.5 py-0.5 text-[11px] font-semibold text-primary">
             {filteredSchedules.length} ca
           </span>
         </div>
-        <div className="mt-3">
-          <WeekdaySelector selectedDay={selectedDay} onSelectDay={setSelectedDay} />
-        </div>
+        <WeekdaySelector selectedDay={selectedDay} onSelectDay={setSelectedDay} />
       </section>
 
+      {/* Schedules List */}
       <ScheduleCardList schedules={filteredSchedules} isLoading={isLoading} />
     </div>
   );

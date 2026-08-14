@@ -1,4 +1,5 @@
 import React from "react";
+import { X, Copy, QrCode, AlertCircle, CircleCheck } from "lucide-react";
 import type {
   BankTransferQrResponse,
   FeeRecordResponse,
@@ -19,11 +20,10 @@ interface QrPaymentDrawerProps {
   onCopy: (text: string, label: string) => void;
 }
 
-const formatMoney = (amount: number) =>
-  new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
+const formatMoney = (amount: number) => {
+  const formatted = amount.toLocaleString("vi-VN");
+  return `${formatted} đ`;
+};
 
 export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
   isOpen,
@@ -47,46 +47,59 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/50 backdrop-blur-[1px]">
-      <div className="absolute inset-0" onClick={() => !isBusy && onClose()} />
+      <div
+        className="absolute inset-0"
+        onClick={() => !isBusy && onClose()}
+      />
 
       <div
-        className="relative z-10 w-full max-h-[90vh] overflow-y-auto rounded-t-[28px] border-t border-surface-border bg-white p-5 shadow-xl"
+        className="relative z-10 w-full max-h-[90vh] overflow-y-auto rounded-t-[16px] border-t border-surface-border bg-white p-5 shadow-xl"
         style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
       >
-        <div className="flex items-center justify-between border-b border-surface-border pb-3">
-          <div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-              Mã VietQR thanh toán
-            </span>
-            <h3 className="mt-1 text-base font-bold text-text-heading">
-              {selectedFeeRecord?.className || "Học phí lớp học"}
-            </h3>
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between border-b border-surface-border/80 pb-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-primary-light text-primary">
+              <QrCode className="h-4 w-4" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+                MÃ VIETQR THANH TOÁN
+              </span>
+              <h3 className="text-sm font-bold text-text-heading truncate">
+                {selectedFeeRecord?.className || "Học phí lớp học"}
+              </h3>
+            </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             disabled={isBusy}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-hover text-text-muted disabled:opacity-50"
+            aria-label="Đóng"
+            className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-surface-hover text-text-muted transition-colors hover:text-text-heading disabled:opacity-50"
           >
-            x
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {feedbackMessage && (
-          <div className="mt-4 rounded-[16px] border border-emerald-200 bg-emerald-50 p-3 text-center text-sm font-medium text-emerald-700">
-            {feedbackMessage}
+          <div className="mt-4 flex items-center gap-2 rounded-[12px] border border-emerald-200 bg-emerald-50 p-3 text-xs font-medium text-emerald-700">
+            <CircleCheck className="h-4 w-4 shrink-0" />
+            <span>{feedbackMessage}</span>
           </div>
         )}
 
         {error && (
-          <div className="mt-4 rounded-[16px] border border-error/20 bg-red-50 p-3 text-sm text-error">
-            {error}
+          <div className="mt-4 flex items-center gap-2 rounded-[12px] border border-error/20 bg-red-50 p-3 text-xs text-error">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
         {isBusy ? (
           <div className="flex flex-col items-center justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-            <p className="mt-3 text-sm font-medium text-text-body">
+            <p className="mt-3 text-xs font-medium text-text-body">
               {paymentState === "CHECKING_PENDING" && "Đang kiểm tra giao dịch đang chờ..."}
               {paymentState === "CREATING_PAYMENT" && "Đang tạo yêu cầu thanh toán VietQR..."}
               {paymentState === "LOADING_QR" && "Đang tải mã VietQR..."}
@@ -95,8 +108,9 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
           </div>
         ) : qrData ? (
           <div className="space-y-4 pt-4">
+            {/* QR Image Box */}
             <div className="flex flex-col items-center justify-center">
-              <div className="rounded-[24px] border border-surface-border bg-white p-3 shadow-sm">
+              <div className="rounded-[16px] border border-surface-border bg-white p-3 shadow-sm">
                 <img
                   src={qrData.qrImageUrl}
                   alt="VietQR Code"
@@ -108,65 +122,73 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
               </p>
             </div>
 
-            <div className="space-y-3 rounded-[22px] border border-surface-border bg-surface-page p-4 text-sm">
+            {/* Bank Transfer Details */}
+            <div className="space-y-3 rounded-[12px] border border-surface-border bg-surface-page p-3.5 text-xs">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-text-muted">Ngân hàng</span>
-                <span className="text-right font-semibold text-text-heading">
+                <span className="text-right font-semibold text-text-heading truncate">
                   BIN {qrData.bankBin} ({qrData.accountName})
                 </span>
               </div>
 
-              <div className="flex items-center justify-between gap-3 border-t border-surface-border pt-3">
+              <div className="flex items-center justify-between gap-3 border-t border-surface-border/80 pt-2.5">
                 <span className="text-text-muted">Số tài khoản</span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono font-bold text-text-heading">
                     {qrData.accountNo}
                   </span>
                   <button
+                    type="button"
                     onClick={() => onCopy(qrData.accountNo, "số tài khoản")}
-                    className="rounded-full bg-primary-light px-2.5 py-1 text-[11px] font-semibold text-primary"
+                    className="flex items-center gap-1 rounded-full bg-primary-light px-2.5 py-0.5 text-[11px] font-semibold text-primary transition-colors hover:bg-orange-100"
                   >
-                    Sao chép
+                    <Copy className="h-3 w-3" />
+                    <span>Sao chép</span>
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between gap-3 border-t border-surface-border pt-3">
+              <div className="flex items-center justify-between gap-3 border-t border-surface-border/80 pt-2.5">
                 <span className="text-text-muted">Số tiền</span>
-                <span className="font-bold text-primary">
+                <span className="font-bold text-primary text-sm">
                   {formatMoney(qrData.amount)}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between gap-3 border-t border-surface-border pt-3">
+              <div className="flex items-center justify-between gap-3 border-t border-surface-border/80 pt-2.5">
                 <span className="text-text-muted">Nội dung CK</span>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-text-heading">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="font-mono font-bold text-text-heading truncate">
                     {qrData.description}
                   </span>
                   <button
+                    type="button"
                     onClick={() => onCopy(qrData.description, "nội dung chuyển khoản")}
-                    className="rounded-full bg-primary-light px-2.5 py-1 text-[11px] font-semibold text-primary"
+                    className="flex items-center gap-1 shrink-0 rounded-full bg-primary-light px-2.5 py-0.5 text-[11px] font-semibold text-primary transition-colors hover:bg-orange-100"
                   >
-                    Sao chép
+                    <Copy className="h-3 w-3" />
+                    <span>Sao chép</span>
                   </button>
                 </div>
               </div>
             </div>
 
+            {/* Actions */}
             <div className="space-y-2">
               {currentPayment && currentPayment.status === "PENDING" && (
                 <button
+                  type="button"
                   onClick={onCancelPayment}
-                  className="w-full rounded-[16px] border border-error/20 bg-red-50 py-3 text-sm font-semibold text-error"
+                  className="w-full rounded-[12px] border border-error/20 bg-red-50 py-2.5 text-xs font-semibold text-error transition-colors hover:bg-red-100"
                 >
                   Hủy giao dịch đang chờ
                 </button>
               )}
 
               <button
+                type="button"
                 onClick={onClose}
-                className="w-full rounded-[16px] border border-surface-border bg-white py-3 text-sm font-semibold text-text-body"
+                className="w-full rounded-[12px] border border-surface-border bg-white py-2.5 text-xs font-semibold text-text-heading transition-colors hover:bg-surface-hover"
               >
                 Đóng
               </button>
@@ -177,3 +199,5 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
     </div>
   );
 };
+
+export default QrPaymentDrawer;

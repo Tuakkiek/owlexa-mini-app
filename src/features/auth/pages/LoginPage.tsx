@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useAtomValue } from "jotai";
+import { useNavigate } from "zmp-ui";
 import { LoginForm } from "../components/LoginForm";
+import { authStateAtom } from "@/core/auth/authStore";
+import { PATHS } from "@/router/routes";
 
 export const LoginPage: React.FC = () => {
+  const authState = useAtomValue(authStateAtom);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authState === "AUTHENTICATED_STUDENT") {
+      navigate(PATHS.HOME, { replace: true });
+    }
+  }, [authState, navigate]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(180deg,#fff7ed_0%,#f8fafc_55%,#ffffff_100%)] px-4 py-8">
       <div className="w-full max-w-sm rounded-[28px] border border-surface-border bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
