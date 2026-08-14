@@ -35,7 +35,7 @@ export const LoginPage: React.FC = () => {
 
         <div className="mt-6 border-t border-surface-border pt-4 text-center">
           <p className="text-xs text-text-muted">
-            Owlexa Design System v2.0 · Chăm sóc học viên
+            © 2026 Owlexa
           </p>
         </div>
       </Card>
