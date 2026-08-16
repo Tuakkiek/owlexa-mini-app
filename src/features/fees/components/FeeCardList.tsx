@@ -71,7 +71,7 @@ export const FeeCardList: React.FC<FeeCardListProps> = ({
                 </div>
               </div>
               <span
-                className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase shrink-0 ${meta.bgClass} ${meta.textClass} ${meta.borderClass}`}
+                className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.03em] shrink-0 ${meta.bgClass} ${meta.textClass} ${meta.borderClass}`}
               >
                 {meta.label}
               </span>

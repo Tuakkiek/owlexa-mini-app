@@ -190,12 +190,12 @@ export const AttendancePage: React.FC = () => {
                   </div>
                   {meta ? (
                     <span
-                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase whitespace-nowrap ${meta.toneClass}`}
+                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.03em] whitespace-nowrap ${meta.toneClass}`}
                     >
                       {meta.label}
                     </span>
                   ) : (
-                    <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[10px] font-semibold uppercase text-gray-600 whitespace-nowrap">
+                    <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.03em] text-gray-600 whitespace-nowrap">
                       Chưa điểm danh
                     </span>
                   )}

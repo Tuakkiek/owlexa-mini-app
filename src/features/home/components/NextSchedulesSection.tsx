@@ -77,7 +77,7 @@ export const NextSchedulesSection: React.FC<NextSchedulesSectionProps> = ({
     <section className="rounded-[24px] border border-surface-border bg-surface-card p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-primary">
             Lịch học
           </p>
           <h3 className="mt-1 text-base font-bold text-text-heading">
@@ -143,7 +143,7 @@ export const NextSchedulesSection: React.FC<NextSchedulesSectionProps> = ({
                   </p>
                 </div>
                 <div className="rounded-[16px] bg-white px-3 py-2 text-right shadow-sm">
-                  <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
+                  <p className="text-[11px] uppercase tracking-[0.04em] text-text-muted">
                     Giờ học
                   </p>
                   <p className="mt-1 text-sm font-bold text-text-heading">

@@ -421,7 +421,7 @@ export const ProfilePage: React.FC = () => {
           <div className="w-full max-w-sm rounded-[16px] border border-surface-border bg-white p-5 shadow-xl">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+                <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-primary">
                   BẢO MẬT
                 </span>
                 <h3 className="text-base font-bold text-text-heading">
