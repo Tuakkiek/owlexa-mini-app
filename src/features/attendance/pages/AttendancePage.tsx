@@ -1,18 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
-  CircleCheck,
-  BookOpen,
+  CalendarDays,
   Calendar,
-  RotateCw,
   MessageSquare,
-  AlertCircle,
+  Clock,
+  MapPin,
+  User as UserIcon,
 } from "lucide-react";
 import { httpClient, type AppApiError } from "@/core/api/httpClient";
-import type { ScheduleResponse } from "@/features/schedule/scheduleTypes";
 import {
   ATTENDANCE_STATUS_META,
-  type AttendanceResponse,
-  type AttendanceStatus,
+  type StudentClassSessionResponse,
 } from "../attendanceTypes";
 
 const formatDateLabel = (value: string) => {
@@ -30,134 +28,52 @@ const formatDateLabel = (value: string) => {
   }
 };
 
-const STATUS_BADGE_STYLES: Record<
-  AttendanceStatus,
-  { label: string; badgeClass: string }
-> = {
-  PRESENT: {
-    label: "Có mặt",
-    badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  },
-  LATE: {
-    label: "Muộn",
-    badgeClass: "bg-amber-50 text-amber-700 border-amber-200",
-  },
-  EXCUSED: {
-    label: "Xin phép",
-    badgeClass: "bg-blue-50 text-blue-700 border-blue-200",
-  },
-  ABSENT: {
-    label: "Vắng mặt",
-    badgeClass: "bg-red-50 text-red-700 border-red-200",
-  },
-};
-
 export const AttendancePage: React.FC = () => {
-  const [schedules, setSchedules] = useState<ScheduleResponse[]>([]);
-  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceResponse[]>([]);
-  const [isLoadingSchedules, setIsLoadingSchedules] = useState(true);
-  const [isLoadingAttendance, setIsLoadingAttendance] = useState(false);
+  const [sessions, setSessions] = useState<StudentClassSessionResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSchedules = useCallback(async (signal?: AbortSignal) => {
+  const fetchSessions = useCallback(async (signal?: AbortSignal) => {
     try {
-      setIsLoadingSchedules(true);
+      setIsLoading(true);
       setError(null);
-      const res = await httpClient.get<ScheduleResponse[]>("/student/schedules/me", {
-        signal,
-        allowAuthReplay: true,
-      });
-      setSchedules(res.data);
+      const res = await httpClient.get<StudentClassSessionResponse[]>(
+        "/student/attendance/class-sessions",
+        {
+          signal,
+          allowAuthReplay: true,
+          params: { date },
+        },
+      );
+      setSessions(res.data);
     } catch (err: any) {
       if (err?.kind === "REQUEST_ABORTED") return;
       const apiErr = err as AppApiError;
-      setError(apiErr.message || "Không thể tải danh sách lớp học.");
+      setError(apiErr.message || "Không thể tải dữ liệu điểm danh.");
+      setSessions([]);
     } finally {
-      setIsLoadingSchedules(false);
+      setIsLoading(false);
     }
-  }, []);
+  }, [date]);
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchSchedules(controller.signal);
+    fetchSessions(controller.signal);
     return () => controller.abort();
-  }, [fetchSchedules]);
+  }, [fetchSessions]);
 
-  const classOptions = useMemo(() => {
-    const map = new Map<number, { classId: number; className: string; courseName?: string }>();
-    schedules.forEach((schedule) => {
-      if (!map.has(schedule.classId)) {
-        map.set(schedule.classId, {
-          classId: schedule.classId,
-          className: schedule.className,
-          courseName: schedule.courseName,
-        });
-      }
-    });
-    return Array.from(map.values()).sort((a, b) => a.className.localeCompare(b.className));
-  }, [schedules]);
+  const handlePrevDay = () => {
+    const d = new Date(date);
+    d.setDate(d.getDate() - 1);
+    setDate(d.toISOString().split("T")[0]);
+  };
 
-  useEffect(() => {
-    if (classOptions.length > 0 && selectedClassId === null) {
-      setSelectedClassId(classOptions[0].classId);
-    }
-  }, [classOptions, selectedClassId]);
-
-  const fetchAttendance = useCallback(
-    async (signal?: AbortSignal) => {
-      if (!selectedClassId) {
-        setAttendanceRecords([]);
-        return;
-      }
-
-      try {
-        setIsLoadingAttendance(true);
-        setError(null);
-        const res = await httpClient.get<AttendanceResponse[]>("/student/attendance", {
-          signal,
-          allowAuthReplay: true,
-          params: { classId: selectedClassId, date },
-        });
-        setAttendanceRecords(res.data);
-      } catch (err: any) {
-        if (err?.kind === "REQUEST_ABORTED") return;
-        const apiErr = err as AppApiError;
-        setError(apiErr.message || "Không thể tải dữ liệu điểm danh.");
-        setAttendanceRecords([]);
-      } finally {
-        setIsLoadingAttendance(false);
-      }
-    },
-    [date, selectedClassId],
-  );
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetchAttendance(controller.signal);
-    return () => controller.abort();
-  }, [fetchAttendance]);
-
-  const stats = useMemo(() => {
-    const base: Record<AttendanceStatus, number> = {
-      PRESENT: 0,
-      ABSENT: 0,
-      LATE: 0,
-      EXCUSED: 0,
-    };
-
-    attendanceRecords.forEach((record) => {
-      if (base[record.status] !== undefined) {
-        base[record.status] += 1;
-      }
-    });
-
-    return base;
-  }, [attendanceRecords]);
-
-  const selectedClass = classOptions.find((option) => option.classId === selectedClassId) || null;
-  const isLoading = isLoadingSchedules || isLoadingAttendance;
+  const handleNextDay = () => {
+    const d = new Date(date);
+    d.setDate(d.getDate() + 1);
+    setDate(d.toISOString().split("T")[0]);
+  };
 
   return (
     <div className="mx-auto max-w-[520px] space-y-4 px-4 pb-6 pt-2">
@@ -170,45 +86,12 @@ export const AttendancePage: React.FC = () => {
         </div>
       </header>
 
-      {/* Summary Stats */}
-      <section className="grid grid-cols-2 gap-3">
-        <div className="flex flex-col justify-between rounded-[16px] border border-surface-border bg-white p-4 shadow-sm">
-          <div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-primary-light text-primary">
-              <BookOpen className="h-5 w-5" />
-            </div>
-            <p className="mt-3 text-xs font-medium text-text-muted">Lớp hiện chọn</p>
-            <p className="mt-1 truncate text-sm font-bold text-text-heading">
-              {selectedClass?.className || "Chưa chọn lớp"}
-            </p>
-          </div>
-          <p className="mt-2 text-xs text-text-muted truncate">
-            {classOptions.length} lớp học khả dụng
-          </p>
-        </div>
-
-        <div className="flex flex-col justify-between rounded-[16px] border border-surface-border bg-white p-4 shadow-sm">
-          <div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-primary-light text-primary">
-              <Calendar className="h-5 w-5" />
-            </div>
-            <p className="mt-3 text-xs font-medium text-text-muted">Ngày đang xem</p>
-            <p className="mt-1 truncate text-xs font-bold text-text-heading">
-              {formatDateLabel(date)}
-            </p>
-          </div>
-          <p className="mt-2 text-xs text-primary font-medium truncate">
-            {attendanceRecords.length} bản ghi
-          </p>
-        </div>
-      </section>
-
       {error && (
         <div className="rounded-[16px] border border-error/20 bg-red-50 p-4 text-xs text-error">
           <p>{error}</p>
           <button
             type="button"
-            onClick={() => fetchAttendance()}
+            onClick={() => fetchSessions()}
             className="mt-2 font-semibold underline"
           >
             Thử lại
@@ -216,152 +99,128 @@ export const AttendancePage: React.FC = () => {
         </div>
       )}
 
-      {/* Class & Date Filter Box */}
-      <section className="rounded-[16px] border border-surface-border bg-white p-4 shadow-sm space-y-3">
-        <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-text-heading">
-            <BookOpen className="h-4 w-4 text-primary" />
-            <span>Chọn lớp học</span>
-          </label>
-          <select
-            value={selectedClassId ?? ""}
-            onChange={(e) =>
-              setSelectedClassId(e.target.value ? Number(e.target.value) : null)
-            }
-            className="h-11 w-full rounded-[12px] border border-surface-border bg-white px-3 text-sm text-text-heading outline-none transition-colors focus:border-primary"
+      {/* Date Filter Box */}
+      <section className="rounded-[16px] border border-surface-border bg-white p-4 shadow-sm flex flex-col gap-3">
+        <label className="flex items-center gap-1.5 text-xs font-semibold text-text-heading">
+          <Calendar className="h-4 w-4 text-primary" />
+          <span>Ngày đang xem</span>
+        </label>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handlePrevDay}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-surface-border bg-white text-text-heading transition-colors hover:bg-surface-hover"
           >
-            {classOptions.length === 0 ? (
-              <option value="">Chưa có lớp học</option>
-            ) : (
-              classOptions.map((option) => (
-                <option key={option.classId} value={option.classId}>
-                  {option.className}
-                </option>
-              ))
-            )}
-          </select>
-        </div>
-
-        <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-text-heading">
-            <Calendar className="h-4 w-4 text-primary" />
-            <span>Chọn ngày</span>
-          </label>
+            &lt;
+          </button>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="h-11 w-full rounded-[12px] border border-surface-border bg-white px-3 text-sm text-text-heading outline-none transition-colors focus:border-primary"
+            className="h-11 flex-1 min-w-0 rounded-[12px] border border-surface-border bg-white px-3 text-sm text-text-heading outline-none transition-colors focus:border-primary"
           />
+          <button
+            type="button"
+            onClick={handleNextDay}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-surface-border bg-white text-text-heading transition-colors hover:bg-surface-hover"
+          >
+            &gt;
+          </button>
         </div>
+        <button
+          type="button"
+          onClick={() => setDate(new Date().toISOString().split("T")[0])}
+          className="h-11 w-full rounded-[12px] border border-surface-border bg-white text-sm font-semibold text-text-heading transition-colors hover:bg-surface-hover"
+        >
+          Hôm nay
+        </button>
       </section>
 
-      {/* 4 Status Counters (2x2) */}
-      <section className="grid grid-cols-2 gap-3">
-        {(["PRESENT", "LATE", "EXCUSED", "ABSENT"] as AttendanceStatus[]).map((status) => {
-          const meta = STATUS_BADGE_STYLES[status];
-          return (
-            <div
-              key={status}
-              className="flex flex-col justify-between rounded-[16px] border border-surface-border bg-white p-4 shadow-sm"
-            >
-              <div>
-                <span
-                  className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase ${meta.badgeClass}`}
-                >
-                  {meta.label}
-                </span>
-                <p className="mt-2 text-2xl font-bold text-text-heading">
-                  {stats[status]}
-                </p>
-              </div>
-              <p className="mt-1 text-[11px] text-text-muted">
-                Trạng thái ngày chọn
-              </p>
-            </div>
-          );
-        })}
-      </section>
+      {/* Summary Info */}
+      <div className="flex items-center justify-between text-xs text-text-muted px-1">
+        <span>{formatDateLabel(date)}</span>
+        <span className="font-medium">{sessions.length} ca học</span>
+      </div>
 
-      {/* Attendance Records List */}
+      {/* Session Records List */}
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2].map((idx) => (
             <div
               key={idx}
-              className="h-[100px] animate-pulse rounded-[16px] border border-surface-border bg-white p-4 shadow-sm"
+              className="h-[140px] animate-pulse rounded-[16px] border border-surface-border bg-white p-4 shadow-sm"
             />
           ))}
         </div>
-      ) : classOptions.length === 0 ? (
+      ) : sessions.length === 0 ? (
         <div className="rounded-[16px] border border-dashed border-surface-border bg-white px-4 py-10 text-center shadow-sm">
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-surface-page text-text-muted">
-            <AlertCircle className="h-5 w-5 text-gray-400" />
+            <CalendarDays className="h-5 w-5 text-gray-400" />
           </div>
           <p className="mt-3 text-sm font-semibold text-text-heading">
-            Bạn chưa được xếp vào lớp nào
+            Không có ca học nào
           </p>
           <p className="mt-1 text-xs text-text-muted">
-            Khi có lịch học, dữ liệu điểm danh sẽ xuất hiện tại đây.
-          </p>
-        </div>
-      ) : attendanceRecords.length === 0 ? (
-        <div className="rounded-[16px] border border-dashed border-surface-border bg-white px-4 py-10 text-center shadow-sm">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-surface-page text-text-muted">
-            <CircleCheck className="h-5 w-5 text-gray-400" />
-          </div>
-          <p className="mt-3 text-sm font-semibold text-text-heading">
-            Chưa có dữ liệu điểm danh
-          </p>
-          <p className="mt-1 text-xs text-text-muted">
-            {selectedClass
-              ? `Hiện chưa có bản ghi điểm danh cho ${selectedClass.className} vào ngày đã chọn.`
-              : "Hãy chọn lớp để xem điểm danh."}
+            Bạn không có lịch học nào trong ngày {formatDateLabel(date)}.
           </p>
         </div>
       ) : (
         <div className="space-y-3">
-          {attendanceRecords
-            .slice()
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-            .map((record) => {
-              const meta = STATUS_BADGE_STYLES[record.status] || ATTENDANCE_STATUS_META[record.status];
+          {sessions.map((session) => {
+            const meta = session.attendanceStatus 
+              ? ATTENDANCE_STATUS_META[session.attendanceStatus]
+              : null;
 
-              return (
-                <article
-                  key={record.id}
-                  className="rounded-[16px] border border-surface-border bg-white p-4 shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-primary-light text-primary">
-                        <Calendar className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-medium uppercase text-text-muted">
-                          Ngày điểm danh
-                        </p>
-                        <h3 className="text-sm font-bold text-text-heading">
-                          {formatDateLabel(record.date)}
-                        </h3>
-                      </div>
+            return (
+              <article
+                key={session.scheduleEventId}
+                className="rounded-[16px] border border-surface-border bg-white p-4 shadow-sm transition-all hover:border-primary/50"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-text-heading">
+                      {session.className}
+                    </h3>
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-primary font-medium">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>
+                        {session.startTime.slice(0, 5)} - {session.endTime.slice(0, 5)}
+                      </span>
                     </div>
+                  </div>
+                  {meta ? (
                     <span
-                      className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${meta.badgeClass}`}
+                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase whitespace-nowrap ${meta.toneClass}`}
                     >
                       {meta.label}
                     </span>
-                  </div>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[10px] font-semibold uppercase text-gray-600 whitespace-nowrap">
+                      Chưa điểm danh
+                    </span>
+                  )}
+                </div>
 
+                <div className="mt-4 grid grid-cols-2 gap-3 text-[11px] text-text-muted">
+                  <div className="flex items-center gap-1.5">
+                    <UserIcon className="h-3.5 w-3.5 opacity-70" />
+                    <span className="truncate">{session.teacherName || "Chưa xếp"}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 opacity-70" />
+                    <span className="truncate">{session.roomName || "Chưa xếp"}</span>
+                  </div>
+                </div>
+
+                {session.note && (
                   <div className="mt-3 flex items-start gap-2 rounded-[12px] bg-surface-page p-3 text-xs text-text-body">
                     <MessageSquare className="h-4 w-4 shrink-0 text-text-muted mt-0.5" />
-                    <span>
-                      {record.note?.trim() || "Không có ghi chú thêm."}
-                    </span>
+                    <span>{session.note}</span>
                   </div>
-                </article>
-              );
-            })}
+                )}
+              </article>
+            );
+          })}
         </div>
       )}
     </div>
