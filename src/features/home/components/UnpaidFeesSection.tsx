@@ -34,7 +34,7 @@ export const UnpaidFeesSection: React.FC<UnpaidFeesSectionProps> = ({
     <section className="rounded-[24px] border border-surface-border bg-surface-card p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-primary">
             Học phí
           </p>
           <h3 className="mt-1 text-base font-bold text-text-heading">
@@ -71,7 +71,7 @@ export const UnpaidFeesSection: React.FC<UnpaidFeesSectionProps> = ({
         <div className="mt-4 rounded-card border border-surface-border bg-primary-light p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.16em] text-amber-700">
+              <p className="text-[11px] uppercase tracking-[0.04em] text-amber-700">
                 Cần đóng
               </p>
               <p className="mt-2 text-2xl font-bold text-text-heading">
@@ -79,7 +79,7 @@ export const UnpaidFeesSection: React.FC<UnpaidFeesSectionProps> = ({
               </p>
             </div>
             <div className="rounded-[18px] bg-white px-4 py-3 text-right shadow-sm">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
+              <p className="text-[11px] uppercase tracking-[0.04em] text-text-muted">
                 Hóa đơn mở
               </p>
               <p className="mt-1 text-lg font-bold text-primary">

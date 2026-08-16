@@ -73,7 +73,7 @@ export const DocumentsPage: React.FC = () => {
       <section className="rounded-card border border-surface-border bg-white p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-primary">
               Tài liệu
             </p>
             <h1 className="mt-1 text-3xl font-semibold leading-tight text-text-heading">
@@ -96,7 +96,7 @@ export const DocumentsPage: React.FC = () => {
 
         <div className="mt-4 grid grid-cols-3 gap-3">
           <div className="rounded-[18px] border border-surface-border bg-white px-4 py-3">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
+            <p className="text-[11px] uppercase tracking-[0.03em] text-text-muted">
               Tổng tài liệu
             </p>
             <p className="mt-2 text-xl font-bold text-text-heading">
@@ -104,7 +104,7 @@ export const DocumentsPage: React.FC = () => {
             </p>
           </div>
           <div className="rounded-[18px] border border-surface-border bg-white px-4 py-3">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
+            <p className="text-[11px] uppercase tracking-[0.03em] text-text-muted">
               Lớp học
             </p>
             <p className="mt-2 text-xl font-bold text-text-heading">
@@ -112,7 +112,7 @@ export const DocumentsPage: React.FC = () => {
             </p>
           </div>
           <div className="rounded-[18px] border border-surface-border bg-white px-4 py-3">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
+            <p className="text-[11px] uppercase tracking-[0.03em] text-text-muted">
               Kết quả lọc
             </p>
             <p className="mt-2 text-xl font-bold text-text-heading">
@@ -131,7 +131,7 @@ export const DocumentsPage: React.FC = () => {
       <section className="rounded-[24px] border border-surface-border bg-white p-4 shadow-sm">
         <div className="grid gap-3">
           <div>
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.04em] text-text-muted">
               Tìm kiếm
             </label>
             <div className="relative">
@@ -148,7 +148,7 @@ export const DocumentsPage: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.04em] text-text-muted">
                 Lớp học
               </label>
               <select
@@ -170,7 +170,7 @@ export const DocumentsPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.04em] text-text-muted">
                 Loại tài liệu
               </label>
               <select
@@ -220,7 +220,7 @@ export const DocumentsPage: React.FC = () => {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${meta.badgeClass}`}
+                        className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.03em] ${meta.badgeClass}`}
                       >
                         {meta.label}
                       </span>
@@ -239,7 +239,7 @@ export const DocumentsPage: React.FC = () => {
 
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <div className="rounded-[18px] bg-surface-page px-4 py-3">
-                    <p className="text-[11px] uppercase tracking-[0.12em] text-text-muted">
+                    <p className="text-[11px] uppercase tracking-[0.03em] text-text-muted">
                       Ngày đăng
                     </p>
                     <p className="mt-1 text-sm font-semibold text-text-heading">
@@ -247,7 +247,7 @@ export const DocumentsPage: React.FC = () => {
                     </p>
                   </div>
                   <div className="rounded-[18px] bg-surface-page px-4 py-3">
-                    <p className="text-[11px] uppercase tracking-[0.12em] text-text-muted">
+                    <p className="text-[11px] uppercase tracking-[0.03em] text-text-muted">
                       Người đăng
                     </p>
                     <p className="mt-1 text-sm font-semibold text-text-heading">

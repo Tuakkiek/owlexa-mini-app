@@ -39,7 +39,7 @@ export const ActiveAssignmentsSection: React.FC<ActiveAssignmentsSectionProps> =
     <section className="rounded-[24px] border border-surface-border bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-primary">
             Bài tập
           </p>
           <h3 className="mt-1 text-base font-bold text-text-heading">
@@ -86,7 +86,7 @@ export const ActiveAssignmentsSection: React.FC<ActiveAssignmentsSectionProps> =
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-primary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                  <span className="rounded-full bg-primary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.03em] text-white">
                     {ASSIGNMENT_TYPE_LABEL[assignment.type]}
                   </span>
                   {assignment.hasPassword && (

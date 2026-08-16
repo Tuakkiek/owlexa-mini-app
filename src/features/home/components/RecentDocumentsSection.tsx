@@ -33,7 +33,7 @@ export const RecentDocumentsSection: React.FC<RecentDocumentsSectionProps> = ({
     <section className="rounded-[24px] border border-surface-border bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-primary">
             Tài liệu
           </p>
           <h3 className="mt-1 text-base font-bold text-text-heading">
@@ -87,7 +87,7 @@ export const RecentDocumentsSection: React.FC<RecentDocumentsSectionProps> = ({
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${meta.badgeClass}`}
+                        className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.03em] ${meta.badgeClass}`}
                       >
                         {meta.label}
                       </span>
