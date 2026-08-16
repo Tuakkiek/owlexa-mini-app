@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { httpClient, type AppApiError } from "@/core/api/httpClient";
 import { generateSecureUUIDv4 } from "@/core/utils/cryptoUtils";
 import type {
@@ -18,14 +18,74 @@ export function useFeePayment(onPaymentChanged?: () => void) {
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
 
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stopPolling = useCallback(() => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => stopPolling();
+  }, [stopPolling]);
+
+  const startPolling = useCallback(
+    (paymentId: number) => {
+      stopPolling();
+      const poll = async () => {
+        try {
+          const res = await httpClient.get<BankTransferQrResponse>(
+            `/student/payments/${paymentId}/qr`,
+            { allowAuthReplay: true },
+          );
+          if (res.data) {
+            setQrData(res.data);
+            if (res.data.status === "PAID") {
+              stopPolling();
+              setPaymentState("SUCCESS");
+              onPaymentChanged?.();
+            } else if (
+              res.data.status === "EXPIRED" ||
+              res.data.status === "CANCELLED"
+            ) {
+              stopPolling();
+              setPaymentState("EXPIRED");
+            }
+          }
+        } catch {
+          // Silently retry on next poll
+        }
+      };
+
+      pollRef.current = setInterval(poll, 5000);
+    },
+    [stopPolling, onPaymentChanged],
+  );
+
   const fetchQrForPayment = async (paymentId: number) => {
     setPaymentState("LOADING_QR");
-    const res = await httpClient.get<BankTransferQrResponse>(
-      `/student/payments/${paymentId}/qr`,
-      { allowAuthReplay: true },
-    );
-    setQrData(res.data);
-    setPaymentState("IDLE");
+    try {
+      const res = await httpClient.get<BankTransferQrResponse>(
+        `/student/payments/${paymentId}/qr`,
+        { allowAuthReplay: true },
+      );
+      setQrData(res.data);
+      if (res.data.status === "PAID") {
+        setPaymentState("SUCCESS");
+        onPaymentChanged?.();
+        stopPolling();
+      } else if (res.data.status === "EXPIRED" || res.data.status === "CANCELLED") {
+        setPaymentState("EXPIRED");
+        stopPolling();
+      } else {
+        setPaymentState("IDLE");
+        startPolling(paymentId);
+      }
+    } catch (err) {
+      setPaymentState("IDLE");
+    }
   };
 
   const startQrPayment = async (feeRecord: FeeRecordResponse) => {
@@ -50,12 +110,27 @@ export function useFeePayment(onPaymentChanged?: () => void) {
         return;
       }
 
+      setPaymentState("CONFIRMING");
+    } catch (err: any) {
+      setPaymentState("IDLE");
+      const apiErr = err as AppApiError;
+      setError(
+        apiErr.message || "Không thể kiểm tra thông tin thanh toán. Vui lòng thử lại.",
+      );
+    }
+  };
+
+  const confirmAndCreatePayment = async () => {
+    if (!selectedFeeRecord) return;
+    setError(null);
+
+    try {
       setPaymentState("CREATING_PAYMENT");
       const key = idempotencyKey || generateSecureUUIDv4();
       setIdempotencyKey(key);
 
       const createRes = await httpClient.post<PaymentResponse>(
-        `/student/fee-record/${feeRecord.id}/payments/qr`,
+        `/student/fee-record/${selectedFeeRecord.id}/payments/qr`,
         null,
         {
           headers: { "Idempotency-Key": key },
@@ -67,7 +142,7 @@ export function useFeePayment(onPaymentChanged?: () => void) {
       setCurrentPayment(newPayment);
       await fetchQrForPayment(newPayment.id);
     } catch (err: any) {
-      setPaymentState("IDLE");
+      setPaymentState("CONFIRMING");
       const apiErr = err as AppApiError;
       setError(
         apiErr.message || "Không thể tạo thông tin thanh toán QR. Vui lòng thử lại.",
@@ -86,6 +161,7 @@ export function useFeePayment(onPaymentChanged?: () => void) {
         null,
         { allowAuthReplay: false },
       );
+      stopPolling();
       closeDrawer();
       setFeedbackMessage("Đã hủy giao dịch thành công.");
       onPaymentChanged?.();
@@ -117,6 +193,7 @@ export function useFeePayment(onPaymentChanged?: () => void) {
   };
 
   const closeDrawer = () => {
+    stopPolling();
     setIsOpenDrawer(false);
     setSelectedFeeRecord(null);
     setCurrentPayment(null);
@@ -135,6 +212,7 @@ export function useFeePayment(onPaymentChanged?: () => void) {
     error,
     feedbackMessage,
     startQrPayment,
+    confirmAndCreatePayment,
     cancelPendingPayment,
     copyToClipboard,
     closeDrawer,

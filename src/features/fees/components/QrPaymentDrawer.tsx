@@ -16,6 +16,7 @@ interface QrPaymentDrawerProps {
   error: string | null;
   feedbackMessage: string | null;
   onClose: () => void;
+  onConfirmCreatePayment: () => void;
   onCancelPayment: () => void;
   onCopy: (text: string, label: string) => void;
 }
@@ -43,6 +44,19 @@ const normalizeQrData = (qrData: BankTransferQrResponse | null) => {
   };
 };
 
+const formatCountdown = (expiresAtStr?: string | null): { countdown: string; remainingSeconds: number } => {
+  if (!expiresAtStr) return { countdown: "", remainingSeconds: 0 };
+  const remaining = new Date(expiresAtStr).getTime() - Date.now();
+  if (remaining <= 0) return { countdown: "00:00", remainingSeconds: 0 };
+  const totalSecs = Math.floor(remaining / 1000);
+  const mins = Math.floor(totalSecs / 60);
+  const secs = totalSecs % 60;
+  return {
+    countdown: `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`,
+    remainingSeconds: totalSecs,
+  };
+};
+
 export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
   isOpen,
   selectedFeeRecord,
@@ -52,9 +66,28 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
   error,
   feedbackMessage,
   onClose,
+  onConfirmCreatePayment,
   onCancelPayment,
   onCopy,
 }) => {
+  const expiresAt = currentPayment?.expiresAt || qrData?.expiresAt;
+
+  const [timeState, setTimeState] = React.useState(() => formatCountdown(expiresAt));
+
+  React.useEffect(() => {
+    if (!expiresAt) {
+      setTimeState({ countdown: "", remainingSeconds: 0 });
+      return;
+    }
+
+    setTimeState(formatCountdown(expiresAt));
+    const interval = setInterval(() => {
+      setTimeState(formatCountdown(expiresAt));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+
   if (!isOpen) return null;
 
   const isBusy =
@@ -83,7 +116,7 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
               <QrCode className="h-4 w-4" />
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+              <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-primary">
                 MÃ VIETQR THANH TOÁN
               </span>
               <h3 className="text-sm font-bold text-text-heading truncate">
@@ -116,7 +149,100 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
           </div>
         )}
 
-        {isBusy ? (
+        {paymentState === "SUCCESS" || qrData?.status === "PAID" ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-4 shadow-sm">
+              <CircleCheck className="h-10 w-10" />
+            </div>
+            <h3 className="text-lg font-bold text-emerald-700">
+              Thanh toán thành công!
+            </h3>
+            <p className="mt-2 text-xs text-text-muted max-w-[280px] leading-relaxed">
+              Cảm ơn bạn đã thanh toán. Hóa đơn của bạn đã được gạch nợ tự động trên hệ thống.
+            </p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-6 w-full rounded-[12px] bg-primary py-3 text-xs font-bold text-white shadow-sm transition-colors hover:bg-primary-dark"
+            >
+              Hoàn tất
+            </button>
+          </div>
+        ) : paymentState === "EXPIRED" || qrData?.status === "EXPIRED" ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-red-600 mb-4 shadow-sm">
+              <AlertCircle className="h-10 w-10" />
+            </div>
+            <h3 className="text-lg font-bold text-text-heading">
+              Mã QR đã hết hạn
+            </h3>
+            <p className="mt-2 text-xs text-text-muted max-w-[280px] leading-relaxed">
+              Mã thanh toán này đã hết hạn hoặc đã bị hủy. Vui lòng tạo mã mới để thực hiện thanh toán.
+            </p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-6 w-full rounded-[12px] border border-surface-border bg-white py-3 text-xs font-bold text-text-heading transition-colors hover:bg-surface-hover"
+            >
+              Đóng
+            </button>
+          </div>
+        ) : paymentState === "CONFIRMING" && selectedFeeRecord ? (
+          <div className="space-y-4 pt-4">
+            <div className="rounded-card border border-amber-200 bg-amber-50/70 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-800">
+                  <QrCode className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-amber-900">
+                    Xác nhận thanh toán VietQR
+                  </h4>
+                  <p className="mt-1 text-xs text-amber-800 leading-relaxed">
+                    Bạn sắp tạo mã VietQR thanh toán cho khoản học phí bên dưới. Mã sẽ tự động có hiệu lực và hết hạn sau 30 phút.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Fee summary card */}
+            <div className="space-y-2 rounded-[12px] border border-surface-border bg-surface-page p-3.5 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-text-muted font-medium">Lớp học:</span>
+                <span className="font-bold text-text-heading">{selectedFeeRecord.className}</span>
+              </div>
+              <div className="flex justify-between items-center border-t border-surface-border/80 pt-2">
+                <span className="text-text-muted font-medium">Tháng học phí:</span>
+                <span className="font-semibold text-text-heading">{selectedFeeRecord.month}</span>
+              </div>
+              <div className="flex justify-between items-center border-t border-surface-border/80 pt-2">
+                <span className="text-text-muted font-medium">Số tiền thanh toán:</span>
+                <span className="font-bold text-primary text-sm">
+                  {formatMoney(selectedFeeRecord.amount - (selectedFeeRecord.discountAmount || 0) - selectedFeeRecord.paidAmount)}
+                </span>
+              </div>
+            </div>
+
+            {/* Confirmation actions */}
+            <div className="flex items-center gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={onConfirmCreatePayment}
+                className="flex-1 flex items-center justify-center gap-2 rounded-[12px] bg-primary py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark"
+              >
+                <QrCode className="h-4 w-4" />
+                <span>Xác nhận tạo mã QR</span>
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-[12px] border border-surface-border bg-white px-4 py-2.5 text-xs font-semibold text-text-heading transition-colors hover:bg-surface-hover"
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        ) : isBusy ? (
           <div className="flex flex-col items-center justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             <p className="mt-3 text-xs font-medium text-text-body">
@@ -128,6 +254,30 @@ export const QrPaymentDrawer: React.FC<QrPaymentDrawerProps> = ({
           </div>
         ) : displayQr ? (
           <div className="space-y-4 pt-4">
+            {/* Auto completion & countdown timer banner */}
+            <div className="flex items-center justify-between rounded-full border border-amber-200 bg-amber-50 px-3.5 py-2">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
+                </span>
+                <span className="text-xs font-medium text-amber-800">
+                  Tự động hoàn thành sau khi chuyển
+                </span>
+              </div>
+              {timeState.countdown ? (
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 font-mono text-xs font-semibold ${
+                    timeState.remainingSeconds < 60
+                      ? "animate-pulse border-red-200 bg-red-50 text-red-700"
+                      : "border-amber-200 bg-white text-amber-800"
+                  }`}
+                >
+                  {timeState.countdown}
+                </span>
+              ) : null}
+            </div>
+
             {/* QR Image Box */}
             <div className="flex flex-col items-center justify-center">
               <div className="rounded-card border border-surface-border bg-white p-3 shadow-sm">

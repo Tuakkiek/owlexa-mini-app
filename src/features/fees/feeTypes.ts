@@ -39,9 +39,12 @@ export interface BankTransferQrResponse {
 export type PaymentConceptualState =
   | "IDLE"
   | "CHECKING_PENDING"
+  | "CONFIRMING"
   | "CREATING_PAYMENT"
   | "LOADING_QR"
-  | "CANCELLING_PAYMENT";
+  | "CANCELLING_PAYMENT"
+  | "SUCCESS"
+  | "EXPIRED";
 
 export const FEE_STATUS_META: Record<
   FeeStatus,

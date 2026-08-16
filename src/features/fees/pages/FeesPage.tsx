@@ -124,6 +124,7 @@ export const FeesPage: React.FC = () => {
         error={paymentControl.error}
         feedbackMessage={paymentControl.feedbackMessage}
         onClose={paymentControl.closeDrawer}
+        onConfirmCreatePayment={paymentControl.confirmAndCreatePayment}
         onCancelPayment={paymentControl.cancelPendingPayment}
         onCopy={paymentControl.copyToClipboard}
       />

@@ -38,7 +38,7 @@ export const WeekdaySelector: React.FC<WeekdaySelectorProps> = ({
                 : "border-surface-border bg-white text-text-body hover:bg-surface-hover active:bg-gray-100"
             }`}
           >
-            <span className="block text-[11px] font-bold uppercase tracking-wider">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.03em]">
               {info.short}
             </span>
             <span
