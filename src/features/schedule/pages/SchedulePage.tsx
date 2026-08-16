@@ -229,15 +229,11 @@ export const SchedulePage: React.FC = () => {
   return (
     <div className="mx-auto w-full max-w-[520px] space-y-5 px-4 pb-6 pt-4">
       <section className="rounded-card border border-surface-border bg-white p-5 shadow-sm">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-          Lịch học
-        </p>
+        
         <h1 className="mt-2 text-2xl font-bold leading-none text-text-heading">
           Thời khóa biểu
         </h1>
-        <p className="mt-2 max-w-[320px] text-xs leading-5 text-text-muted">
-          Theo dõi lịch học và lịch thi theo từng tuần
-        </p>
+       
 
         <div className="mt-4 flex flex-wrap gap-3">
           <button
