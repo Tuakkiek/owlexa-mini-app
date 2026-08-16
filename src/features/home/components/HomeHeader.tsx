@@ -23,10 +23,10 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({ user }) => {
   return (
     <header className="pt-2">
       <div className="flex items-center justify-between">
-        <span className="inline-flex items-center rounded-full border border-primary bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+        {/* <span className="inline-flex items-center rounded-full border border-primary bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
           STUDENT MINI APP
-        </span>
-        <div className="flex items-center gap-2">
+        </span> */}
+        {/* <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => navigate(PATHS.PROFILE)}
@@ -43,12 +43,12 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({ user }) => {
           >
             <Bell className="h-5 w-5 text-gray-700" />
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="mt-4">
         <h1 className="text-2xl font-bold tracking-tight text-text-heading">
-          Xin chào, {user?.fullName || "Học viên"}
+          {user?.fullName || "Học viên"}
         </h1>
         <p className="mt-1 text-sm font-normal text-text-body">
           {user?.centerName || "Owlexa Central Branch"}

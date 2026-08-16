@@ -2,7 +2,7 @@ export type AttendanceStatus = "PRESENT" | "ABSENT" | "LATE" | "EXCUSED";
 
 export interface AttendanceResponse {
   id: number;
-  scheduleId: number;
+  scheduleId?: number | null;
   scheduleEventId?: number | null;
   classId: number;
   centerId: number;
