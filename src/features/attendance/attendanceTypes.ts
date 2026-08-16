@@ -41,3 +41,15 @@ export const ATTENDANCE_STATUS_META: Record<
     cardClass: "bg-blue-50 text-blue-800",
   },
 };
+
+export interface StudentClassSessionResponse {
+  scheduleEventId: number;
+  classId: number;
+  className: string;
+  roomName?: string;
+  teacherName?: string;
+  startTime: string;
+  endTime: string;
+  attendanceStatus: AttendanceStatus | null;
+  note?: string;
+}
